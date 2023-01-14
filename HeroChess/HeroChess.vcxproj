@@ -151,6 +151,7 @@
     <ResourceCompile Include="HeroChess.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\resource\bitmap1.bmp" />
     <Image Include="HeroChess.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

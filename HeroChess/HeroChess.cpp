@@ -3,8 +3,18 @@
 
 #include "framework.h"
 #include "HeroChess.h"
+#include <windows.h>
+#include <TCHAR.H>
+#include "Resource.h"
 
 #define MAX_LOADSTRING 100
+
+const int START_W = 250;
+const int START_H = 100;
+const int WIN_W = 560;
+const int WIN_H = 780;
+const int IMAGE_W = 320;
+const int IMAGE_H = 320;
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -44,12 +54,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // 기본 메시지 루프입니다:
     while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
     }
 
     return (int) msg.wParam;
@@ -76,7 +83,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_HEROCHESS));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_HEROCHESS);
+    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDR_MENU1);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -97,8 +104,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
+
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+       START_W, START_H, WIN_W, WIN_H, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -121,43 +129,37 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    HDC hdc, memdc;
+    PAINTSTRUCT ps;
+    static HBITMAP hBitmap;
+
+    //임시
+
     switch (message)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // 메뉴 선택을 구문 분석합니다:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
+    case WM_CREATE:
+        hBitmap = (HBITMAP)LoadBitmap(hInst,
+            MAKEINTRESOURCE(IDB_BITMAP1));
         break;
     case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-            EndPaint(hWnd, &ps);
-        }
+        hdc = BeginPaint(hWnd, &ps);
+        memdc = CreateCompatibleDC(hdc);
+        SelectObject(memdc, hBitmap);
+        StretchBlt(hdc, 0, 0, WIN_W, WIN_H, memdc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
+        DeleteDC(memdc);
+        EndPaint(hWnd, &ps);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
     }
-    return 0;
+    return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
+
 
 // 정보 대화 상자의 메시지 처리기입니다.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -178,3 +180,21 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
+
+    //case WM_COMMAND:
+    //{
+    //    int wmId = LOWORD(wParam);
+    //    // 메뉴 선택을 구문 분석합니다:
+    //    switch (wmId)
+    //    {
+    //    case IDM_ABOUT:
+    //        DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+    //        break;
+    //    case IDM_EXIT:
+    //        DestroyWindow(hWnd);
+    //        break;
+    //    default:
+    //        return DefWindowProc(hWnd, message, wParam, lParam);
+    //    }
+    //}
+    //break;
