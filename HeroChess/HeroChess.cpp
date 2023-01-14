@@ -4,7 +4,7 @@
 #include "framework.h"
 #include "HeroChess.h"
 #include <windows.h>
-#include <TCHAR.H>
+#include <tchar.h>
 #include "Resource.h"
 
 #define MAX_LOADSTRING 100
@@ -15,6 +15,7 @@ const int WIN_W = 560;
 const int WIN_H = 780;
 const int IMAGE_W = 320;
 const int IMAGE_H = 320;
+const int WHITE = RGB(255, 255, 255);
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -119,40 +120,141 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+class C_Magician
+{
+public:
+    void Load_Image()
+    {
+        count = ++count % 16;
+        for (int i = 0; i < 17; i++)
+            MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2 + i));
+    }
+
+    void Render()
+    {
+        memdc = CreateCompatibleDC(hdc_);
+        oldBit = (HBITMAP)SelectObject(memdc, MagicianBit[count]);
+        //정확한 이미지 크기가 들어가야 제대로 나온다.
+        TransparentBlt(hdc_, x, y, MAGICIAN_W, MAGICIAN_H, memdc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
+    }
+
+    void Release_Image()
+    {
+        SelectObject(memdc, oldBit);
+        for (auto& image : MagicianBit)
+            DeleteObject(image);
+        DeleteDC(memdc);
+    }
+
+    void Move_Per_Frame()
+    {
+        x += 10;
+        if (x > 819) x = -100;
+    }
+
+    void Set_HDC(HDC& hdc)
+    {
+        hdc_ = hdc;
+    }
+
+private:
+    int x = -100;
+    int y = 300;
+
+	//더블 버퍼링
+    //메시지가 발생할 때마다 DC가 초기화하므로
+    //교체하는 방식이 아닌 그리는 DC와 화면에 표시하는 DC를 따로 정해두는 게 좋다.
+    HDC hdc_;
+    HDC memdc;
+    HBITMAP MagicianBit[17], oldBit;
+
+    int count = 0;
+    const int MAGICIAN_W = 48;
+    const int MAGICIAN_H = 48;
+};
+
+
+class C_Image
+{
+public:
+    C_Image(int image) : image_(image) {}
+
+    void Load_Image()
+    {
+        BackgroundBit = LoadBitmap(hInst, MAKEINTRESOURCE(image_));
+    }
+
+    void Render()
+    {
+        memdc = CreateCompatibleDC(hdc_);
+        oldBit = (HBITMAP)SelectObject(memdc, BackgroundBit);
+        //정확한 이미지 크기가 들어가야 제대로 나온다.
+        StretchBlt(hdc_, 0, 0, WIN_W - 10, WIN_H - 50, memdc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
+    }
+
+    void Release_Image()
+    {
+        SelectObject(memdc, oldBit);
+        DeleteObject(BackgroundBit);
+        DeleteDC(memdc);
+    }
+
+    void Set_HDC(HDC& hdc)
+    {
+        hdc_ = hdc;
+    }
+
+private:
+    int image_ = 0;
+
+    //더블 버퍼링
+    //메시지가 발생할 때마다 DC가 초기화하므로
+    //교체하는 방식이 아닌 그리는 DC와 화면에 표시하는 DC를 따로 정해두는 게 좋다.
+    HDC hdc_;
+    HDC memdc;
+    HBITMAP BackgroundBit, oldBit;
+};
+
+
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
 //  용도: 주 창의 메시지를 처리합니다.
 //
-//  WM_COMMAND  - 애플리케이션 메뉴를 처리합니다.
-//  WM_PAINT    - 주 창을 그립니다.
-//  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
-//
-//
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HDC hdc, memdc;
-    PAINTSTRUCT ps;
-    static HBITMAP hBitmap;
+    HDC hdc;
+	PAINTSTRUCT ps;
 
-    //임시
+    static C_Magician magician;
+    static C_Image background(IDB_BITMAP1);
 
     switch (message)
     {
     case WM_CREATE:
-        hBitmap = (HBITMAP)LoadBitmap(hInst,
-            MAKEINTRESOURCE(IDB_BITMAP1));
+        SetTimer(hWnd, 1, 100, NULL);
         break;
+    case WM_TIMER:
+        magician.Move_Per_Frame();
+        InvalidateRgn(hWnd, NULL, true);
+        return 0;
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-        memdc = CreateCompatibleDC(hdc);
-        SelectObject(memdc, hBitmap);
-        StretchBlt(hdc, 0, 0, WIN_W, WIN_H, memdc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
-        DeleteDC(memdc);
+        background.Set_HDC(hdc);
+        magician.Set_HDC(hdc);
+
+        background.Load_Image();
+        magician.Load_Image();
+
+        background.Render();
+        magician.Render();
+
+        background.Release_Image();
+       magician.Release_Image();
         EndPaint(hWnd, &ps);
         break;
     case WM_DESTROY:
+        KillTimer(hWnd, 1);
         PostQuitMessage(0);
         break;
     }
