@@ -1,26 +1,16 @@
 ﻿// HeroChess.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 
-#include "framework.h"
+#include "stdafx.h"
 #include "HeroChess.h"
-#include <windows.h>
-#include <tchar.h>
 #include "Resource.h"
-
-#define MAX_LOADSTRING 100
+#include "C_Hero.h"
+#include "C_Command.h"
 
 const int START_W = 250;
 const int START_H = 100;
-const int WIN_W = 560;
-const int WIN_H = 780;
 const int IMAGE_W = 320;
 const int IMAGE_H = 320;
-const int WHITE = RGB(255, 255, 255);
-
-// 전역 변수:
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
-WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
-WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -119,59 +109,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    return TRUE;
 }
-
-class C_Magician
-{
-public:
-    void Load_Image()
-    {
-        count = ++count % 16;
-        for (int i = 0; i < 17; i++)
-            MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2 + i));
-    }
-
-    void Render()
-    {
-        memdc = CreateCompatibleDC(hdc_);
-        oldBit = (HBITMAP)SelectObject(memdc, MagicianBit[count]);
-        //정확한 이미지 크기가 들어가야 제대로 나온다.
-        TransparentBlt(hdc_, x, y, MAGICIAN_W, MAGICIAN_H, memdc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
-    }
-
-    void Release_Image()
-    {
-        SelectObject(memdc, oldBit);
-        for (auto& image : MagicianBit)
-            DeleteObject(image);
-        DeleteDC(memdc);
-    }
-
-    void Move_Per_Frame()
-    {
-        x += 10;
-        if (x > 819) x = -100;
-    }
-
-    void Set_HDC(HDC& hdc)
-    {
-        hdc_ = hdc;
-    }
-
-private:
-    int x = -100;
-    int y = 300;
-
-	//더블 버퍼링
-    //메시지가 발생할 때마다 DC가 초기화하므로
-    //교체하는 방식이 아닌 그리는 DC와 화면에 표시하는 DC를 따로 정해두는 게 좋다.
-    HDC hdc_;
-    HDC memdc;
-    HBITMAP MagicianBit[17], oldBit;
-
-    int count = 0;
-    const int MAGICIAN_W = 48;
-    const int MAGICIAN_H = 48;
-};
 
 
 class C_Image
