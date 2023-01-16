@@ -18,56 +18,12 @@ public:
 class C_Magician : public C_Hero
 {
 public:
-    virtual void Load_Image() override
-    {
-        count = ++count % 16;
-        for (int i = 0; i < 17; i++)
-            MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2 + i));
-    }
+    virtual void Load_Image() override;
+    virtual void Render() override;
+    virtual void Release_Image() override;
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override;
 
-    virtual void Render() override
-    {
-        memdc = CreateCompatibleDC(hdc_);
-        oldBit = (HBITMAP)SelectObject(memdc, MagicianBit[count]);
-        //정확한 이미지 크기가 들어가야 제대로 나온다.
-        TransparentBlt(hdc_, x, y, MAGICIAN_W, MAGICIAN_H, memdc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
-    }
-
-    virtual void Release_Image() override
-    {
-        SelectObject(memdc, oldBit);
-        for (auto& image : MagicianBit)
-            DeleteObject(image);
-        DeleteDC(memdc);
-    }
-
-    virtual void Move_Per_Frame(int dest_x, int dest_y) override
-    {
-		int dist_x = dest_x - x;
-		int dist_y = dest_y - y;
-
-        if (dist_x >= -5 and dist_x <= 5)
-            x = dest_x;
-        else
-        {
-            int move_x = 10 * dist_x / (int)sqrt(dist_x * dist_x + dist_y * dist_y);
-            x += move_x;
-        }
-
-        if (dist_y >= -5 and dist_y <= 5)
-            y = dest_y;
-        else
-        {
-            int move_y = 10 * dist_y / (int)sqrt(dist_x * dist_x + dist_y * dist_y);
-            y += move_y;
-        }
-	}
-
-    virtual void Set_HDC(HDC& hdc) override
-    {
-        hdc_ = hdc;
-    }
-
+	virtual void Set_HDC(HDC& hdc) override { hdc_ = hdc; }
     virtual int get_x() const override { return x; }
     virtual int get_y() const override { return y; }
 
