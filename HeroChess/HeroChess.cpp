@@ -6,11 +6,11 @@
 #include "Resource.h"
 #include "C_Hero.h"
 #include "C_Command.h"
+#include "C_Image.h"
+#include "C_InputHandler.h"
 
 const int START_W = 250;
 const int START_H = 100;
-const int IMAGE_W = 320;
-const int IMAGE_H = 320;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -110,49 +110,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-
-class C_Image
-{
-public:
-    C_Image(int image) : image_(image) {}
-
-    void Load_Image()
-    {
-        BackgroundBit = LoadBitmap(hInst, MAKEINTRESOURCE(image_));
-    }
-
-    void Render()
-    {
-        memdc = CreateCompatibleDC(hdc_);
-        oldBit = (HBITMAP)SelectObject(memdc, BackgroundBit);
-        //정확한 이미지 크기가 들어가야 제대로 나온다.
-        StretchBlt(hdc_, 0, 0, WIN_W - 10, WIN_H - 50, memdc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
-    }
-
-    void Release_Image()
-    {
-        SelectObject(memdc, oldBit);
-        DeleteObject(BackgroundBit);
-        DeleteDC(memdc);
-    }
-
-    void Set_HDC(HDC& hdc)
-    {
-        hdc_ = hdc;
-    }
-
-private:
-    int image_ = 0;
-
-    //더블 버퍼링
-    //메시지가 발생할 때마다 DC가 초기화하므로
-    //교체하는 방식이 아닌 그리는 DC와 화면에 표시하는 DC를 따로 정해두는 게 좋다.
-    HDC hdc_;
-    HDC memdc;
-    HBITMAP BackgroundBit, oldBit;
-};
-
-
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -165,30 +122,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     static C_Magician magician;
     static C_Image background(IDB_BITMAP1);
+    static C_InputHandler input;
 
     switch (message)
     {
     case WM_CREATE:
-        SetTimer(hWnd, 1, 100, NULL);
+        input.Bind_Command();
         break;
     case WM_TIMER:
-        magician.Move_Per_Frame();
+        //magician.Move_Per_Frame();
+        input.Handle_Input(magician);
         InvalidateRgn(hWnd, NULL, true);
         return 0;
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-        background.Set_HDC(hdc);
-        magician.Set_HDC(hdc);
+		background.Set_HDC(hdc);
+		magician.Set_HDC(hdc);
 
-        background.Load_Image();
-        magician.Load_Image();
+		background.Load_Image();
+		magician.Load_Image();
 
-        background.Render();
-        magician.Render();
+		background.Render();
+		magician.Render();
 
-        background.Release_Image();
-       magician.Release_Image();
-        EndPaint(hWnd, &ps);
+		background.Release_Image();
+		magician.Release_Image();
+		EndPaint(hWnd, &ps);
+        break;
+    case WM_KEYDOWN:
+        input.Set_Pressed(wParam);
+        SetTimer(hWnd, 1, 100, NULL);
+        break;
+    case WM_KEYUP:
         break;
     case WM_DESTROY:
         KillTimer(hWnd, 1);

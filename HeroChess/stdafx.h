@@ -13,6 +13,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <memory>
 #define MAX_LOADSTRING 100
 
 static const int WHITE = RGB(255, 255, 255);

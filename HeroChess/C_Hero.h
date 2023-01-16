@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    int x = -100;
+    int x = 100;
     int y = 300;
 
     //더블 버퍼링

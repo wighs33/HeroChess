@@ -89,6 +89,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,6 +145,8 @@
   <ItemGroup>
     <ClInclude Include="C_Command.h" />
     <ClInclude Include="C_Hero.h" />
+    <ClInclude Include="C_Image.h" />
+    <ClInclude Include="C_InputHandler.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="HeroChess.h" />
     <ClInclude Include="Resource.h" />
@@ -152,6 +155,8 @@
   <ItemGroup>
     <ClCompile Include="C_Command.cpp" />
     <ClCompile Include="C_Hero.cpp" />
+    <ClCompile Include="C_Image.cpp" />
+    <ClCompile Include="C_InputHandler.cpp" />
     <ClCompile Include="HeroChess.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
