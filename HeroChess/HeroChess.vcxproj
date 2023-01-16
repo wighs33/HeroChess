@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="C_Board.h" />
     <ClInclude Include="C_Command.h" />
     <ClInclude Include="C_Hero.h" />
     <ClInclude Include="C_Image.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="C_Board.cpp" />
     <ClCompile Include="C_Command.cpp" />
     <ClCompile Include="C_Hero.cpp" />
     <ClCompile Include="C_Image.cpp" />

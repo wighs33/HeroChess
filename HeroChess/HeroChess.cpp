@@ -151,6 +151,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		background.Release_Image();
 		magician.Release_Image();
+
+        ////사각형그릴때  투명으로
+        //SetROP2(mem1dc, R2_XORPEN);
+        //SelectObject(mem1dc, (HBRUSH)GetStockObject(BLACK_BRUSH));
 		EndPaint(hWnd, &ps);
         break;
     case WM_KEYDOWN:
