@@ -23,6 +23,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+    //디버깅용 : 콘솔 띄우기
+    AllocConsole();
+    freopen("CONOUT$", "wt", stdout);
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -131,7 +135,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_TIMER:
         //magician.Move_Per_Frame();
-        input.Handle_Input(magician);
+        input.Handle_Input(&magician);
         InvalidateRgn(hWnd, NULL, true);
         return 0;
     case WM_PAINT:
@@ -151,6 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_KEYDOWN:
         input.Set_Pressed(wParam);
+        KillTimer(hWnd, 1);
         SetTimer(hWnd, 1, 100, NULL);
         break;
     case WM_KEYUP:

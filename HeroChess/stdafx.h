@@ -14,6 +14,11 @@
 #include <memory.h>
 #include <tchar.h>
 #include <memory>
+
+//임시
+#include <iostream>
+using namespace std;
+
 #define MAX_LOADSTRING 100
 
 static const int WHITE = RGB(255, 255, 255);

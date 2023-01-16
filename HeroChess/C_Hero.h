@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include <cmath>
 
 class C_Hero
 {
@@ -8,8 +9,10 @@ public:
     virtual void Load_Image() = 0;
     virtual void Render() = 0;
     virtual void Release_Image() = 0;
-    virtual void Move_Per_Frame() = 0;
+    virtual void Move_Per_Frame(int destX, int destY) = 0;
     virtual void Set_HDC(HDC& hdc) = 0;
+    virtual int get_x() const = 0;
+    virtual int get_y() const = 0;
 };
 
 class C_Magician : public C_Hero
@@ -38,16 +41,35 @@ public:
         DeleteDC(memdc);
     }
 
-    virtual void Move_Per_Frame() override
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override
     {
-        x += 10;
-        if (x > 819) x = -100;
-    }
+		int dist_x = dest_x - x;
+		int dist_y = dest_y - y;
+
+        if (dist_x >= -5 and dist_x <= 5)
+            x = dest_x;
+        else
+        {
+            int move_x = 10 * dist_x / (int)sqrt(dist_x * dist_x + dist_y * dist_y);
+            x += move_x;
+        }
+
+        if (dist_y >= -5 and dist_y <= 5)
+            y = dest_y;
+        else
+        {
+            int move_y = 10 * dist_y / (int)sqrt(dist_x * dist_x + dist_y * dist_y);
+            y += move_y;
+        }
+	}
 
     virtual void Set_HDC(HDC& hdc) override
     {
         hdc_ = hdc;
     }
+
+    virtual int get_x() const override { return x; }
+    virtual int get_y() const override { return y; }
 
 private:
     int x = 100;
