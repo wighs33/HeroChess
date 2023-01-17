@@ -25,6 +25,8 @@ public:
 		river_tile(2, true)
 	{}
 
+	void Render(HDC hdc);
+
 	void Generate_Grid();
 private:
 	C_Grid grass_tile;

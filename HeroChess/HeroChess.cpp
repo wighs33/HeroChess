@@ -8,6 +8,7 @@
 #include "C_Command.h"
 #include "C_Image.h"
 #include "C_InputHandler.h"
+#include "C_Board.h"
 
 const int START_W = 250;
 const int START_H = 100;
@@ -127,6 +128,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     static C_Magician magician;
     static C_Image background(IDB_BITMAP1);
     static C_InputHandler input;
+    static C_Board board;
 
     switch (message)
     {
@@ -143,6 +145,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         hdc = BeginPaint(hWnd, &ps);
 
 		background.Render(hdc);
+        board.Render(hdc);
 		magician.Render(hdc);
 
 		EndPaint(hWnd, &ps);
