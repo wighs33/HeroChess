@@ -35,11 +35,7 @@ private:
     int x = 100;
     int y = 300;
 
-    //더블 버퍼링
-    //메시지가 발생할 때마다 DC가 초기화하므로
-    //교체하는 방식이 아닌 그리는 DC와 화면에 표시하는 DC를 따로 정해두는 게 좋다.
-    HDC memdc;
-    HBITMAP MagicianBit[17], oldBit;
+    HBITMAP MagicianBit[17];
 
     int count = 0;
     const int MAGICIAN_W = 48;

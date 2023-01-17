@@ -1,17 +1,23 @@
 #include "stdafx.h"
 #include "C_Hero.h"
 
-void C_Magician::Render(HDC hdc)
+void C_Magician::Render(HDC memdc)
 {
+    //애니메이션 카운트 업데이트 하기
     count = ++count % 16;
-    memdc = CreateCompatibleDC(hdc);
-    oldBit = (HBITMAP)SelectObject(memdc, MagicianBit[count]);
-    //정확한 이미지 크기가 들어가야 제대로 나온다.
-    TransparentBlt(hdc, x, y, MAGICIAN_W, MAGICIAN_H, memdc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
+    //이미지DC 생성
+    HDC image_dc = CreateCompatibleDC(memdc);
+    //해당 애니메이션 프레임 이미지DC에 넣기
+    HBITMAP oldBit = (HBITMAP)SelectObject(image_dc, MagicianBit[count]);
 
-    //DC 파괴하기
-    SelectObject(memdc, oldBit);
-    DeleteDC(memdc);
+    //이미지DC의 사진을 임시DC의 적절한 곳에 넣기
+    //정확한 이미지 크기가 들어가야 제대로 나온다.
+    TransparentBlt(memdc, x, y, MAGICIAN_W, MAGICIAN_H, image_dc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
+
+    //이미지 지우기
+    SelectObject(image_dc, oldBit);
+    //이미지DC 삭제
+    DeleteDC(image_dc);
 }
 
 void C_Magician::Move_Per_Frame(int dest_x, int dest_y)

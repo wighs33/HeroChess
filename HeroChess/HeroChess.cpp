@@ -115,6 +115,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -122,7 +123,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HDC hdc;
+    //메인 DC, 임시 DC
+    static HDC hdc, memdc;
+    static HBITMAP hBit;
+
+
 	PAINTSTRUCT ps;
 
     static C_Magician magician;
@@ -134,21 +139,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
         input.Bind_Command();
+        board.Generate_Grid();
         break;
     case WM_TIMER:
         //magician.Move_Per_Frame();
         input.Handle_Input(&magician);
         InvalidateRgn(hWnd, NULL, true);
         return 0;
+
+    // 타이머 있을 때 반복 처리
     case WM_PAINT:
-        // 타이머 있을 때 반복 처리
+    {
+        //메인 도화지 생성
         hdc = BeginPaint(hWnd, &ps);
 
-		background.Render(hdc);
-        board.Render(hdc);
-		magician.Render(hdc);
+        //임시 도화지 생성
+        memdc = CreateCompatibleDC(hdc);
+        if (!hBit)
+            hBit = CreateCompatibleBitmap(hdc, WIN_W, WIN_H);
+        HBITMAP oldBit = (HBITMAP)SelectObject(memdc, hBit);
 
-		EndPaint(hWnd, &ps);
+        //임시 도화지에 오브젝트 들 그리기
+        background.Render(memdc);
+        board.Render(memdc);
+        magician.Render(memdc);
+
+        //임시 도화지의 그림내용 메인 도화지로 옮기기
+        BitBlt(hdc, 0, 0, WIN_W, WIN_H, memdc, 0, 0, SRCCOPY);
+
+        //비트맵 지우기
+        SelectObject(memdc, oldBit);
+
+        //임시 도화지 삭제
+        DeleteDC(memdc);
+
+        //메인 도화지 삭제
+        EndPaint(hWnd, &ps);
+
+
+        //HBRUSH hbrush = CreateSolidBrush(RGB(255, 0, 0));
+//HBRUSH oldbrush = (HBRUSH)SelectObject(hdc, hbrush);
+//Rectangle(hdc, board.Index_To_Pos(0), board.Index_To_Pos(0), board.Index_To_Pos(1), board.Index_To_Pos(1));
+//SelectObject(hdc, oldbrush);
+//DeleteObject(hbrush);
+    }
         break;
     case WM_KEYDOWN:
         input.Set_Pressed(wParam);
@@ -158,6 +192,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYUP:
         break;
     case WM_DESTROY:
+        if (hBit) DeleteObject(hBit);
         KillTimer(hWnd, 1);
         PostQuitMessage(0);
         break;

@@ -3,34 +3,41 @@
 class C_Grid
 {
 public:
-	C_Grid(int move_cost, bool is_water)
-		:move_cost_(move_cost), is_water_(is_water)
+	C_Grid(int color)
+		:color_(color)
 	{}
 
-	int Get_Move_Cost() const { return move_cost_; }
-	bool Is_Water() const { return is_water_; }
+	int Get_Color() const { return color_; }
 
 private:
-	int move_cost_;
-	bool is_water_;
-	//Texture texture_;
+	int color_;
 };
 
 class C_Board
 {
 public:
 	C_Board()
-		:grass_tile(1, false),
-		hill_tile(3, false),
-		river_tile(2, true)
+		:grass_tile(RGB(0, 128, 0)),
+		ground_tile(RGB(150, 75, 0)),
+		river_tile(RGB(0, 10, 96))
 	{}
 
 	void Render(HDC hdc);
 
+	int Pos_To_Index(int pos)
+	{
+		return pos / 60 - 1;
+	}
+
+	int Index_To_Pos(int index)
+	{
+		return (index+1) * 60;
+	}
+
 	void Generate_Grid();
 private:
 	C_Grid grass_tile;
-	C_Grid hill_tile;
+	C_Grid ground_tile;
 	C_Grid river_tile;
 
 	static const int BOARD_W = 7;
@@ -38,4 +45,3 @@ private:
 
 	C_Grid* tiles_[BOARD_H][BOARD_W];
 };
-
