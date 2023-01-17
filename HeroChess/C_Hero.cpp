@@ -1,26 +1,16 @@
 #include "stdafx.h"
 #include "C_Hero.h"
 
-void C_Magician::Load_Image()
+void C_Magician::Render(HDC hdc)
 {
     count = ++count % 16;
-    for (int i = 0; i < 17; i++)
-        MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2 + i));
-}
-
-void C_Magician::Render()
-{
-    memdc = CreateCompatibleDC(hdc_);
+    memdc = CreateCompatibleDC(hdc);
     oldBit = (HBITMAP)SelectObject(memdc, MagicianBit[count]);
     //정확한 이미지 크기가 들어가야 제대로 나온다.
-    TransparentBlt(hdc_, x, y, MAGICIAN_W, MAGICIAN_H, memdc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
-}
+    TransparentBlt(hdc, x, y, MAGICIAN_W, MAGICIAN_H, memdc, 0, 0, MAGICIAN_W, MAGICIAN_H, WHITE);
 
-void C_Magician::Release_Image()
-{
+    //DC 파괴하기
     SelectObject(memdc, oldBit);
-    for (auto& image : MagicianBit)
-        DeleteObject(image);
     DeleteDC(memdc);
 }
 

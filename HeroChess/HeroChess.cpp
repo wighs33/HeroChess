@@ -139,22 +139,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         InvalidateRgn(hWnd, NULL, true);
         return 0;
     case WM_PAINT:
+        // 타이머 있을 때 반복 처리
         hdc = BeginPaint(hWnd, &ps);
-		background.Set_HDC(hdc);
-		magician.Set_HDC(hdc);
 
-		background.Load_Image();
-		magician.Load_Image();
+		background.Render(hdc);
+		magician.Render(hdc);
 
-		background.Render();
-		magician.Render();
-
-		background.Release_Image();
-		magician.Release_Image();
-
-        ////사각형그릴때  투명으로
-        //SetROP2(mem1dc, R2_XORPEN);
-        //SelectObject(mem1dc, (HBRUSH)GetStockObject(BLACK_BRUSH));
 		EndPaint(hWnd, &ps);
         break;
     case WM_KEYDOWN:
