@@ -15,6 +15,7 @@
 #include <tchar.h>
 #include <memory>
 #include <random>
+#include <vector>
 
 //임시
 #include <iostream>
@@ -23,8 +24,12 @@ using namespace std;
 #define MAX_LOADSTRING 100
 
 static const int WHITE = RGB(255, 255, 255);
+static const int BLUE = RGB(0, 0, 255);
+static const int GREEN = RGB(0, 255, 0);
+static const int YELLOW = RGB(255, 230, 0);
 static const int WIN_W = 560;
 static const int WIN_H = 780;
+static const int GRID_WH = 60;
 
 // 전역 변수:
 static HINSTANCE hInst;                                // 현재 인스턴스입니다.

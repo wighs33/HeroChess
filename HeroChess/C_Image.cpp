@@ -10,7 +10,7 @@ void C_Image::Render(HDC memdc)
     HDC image_dc = CreateCompatibleDC(memdc);
     HBITMAP oldBit = (HBITMAP)SelectObject(image_dc, BackgroundBit);
     //정확한 이미지 크기가 들어가야 제대로 나온다.
-    StretchBlt(memdc, 0, 0, WIN_W - 10, WIN_H - 50, image_dc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
+    StretchBlt(memdc, 0, 0, WIN_W, WIN_H, image_dc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
 
     //DC 파괴하기
     SelectObject(image_dc, oldBit);
