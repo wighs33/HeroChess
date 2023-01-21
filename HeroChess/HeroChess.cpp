@@ -139,8 +139,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
         input.Bind_Command();
-        board.Generate_Grid();
-        board.Generate_Hero();
 
         SetTimer(hWnd, 1, 70, NULL);
 

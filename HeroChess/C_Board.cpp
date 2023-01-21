@@ -41,32 +41,54 @@ void C_Board::Render(HDC memdc)
 
 void C_Board::Render_Heroes(HDC memdc)
 {
-	//영웅 들 그리기
-	p1_heroes[0]->Render(memdc);
-	p2_heroes[0]->Render(memdc);
+	bool is_moving = false;
+	for (size_t i = 0; i < 2; i++)
+	{
+		//영웅 들 그리기
+		p1_heroes[i]->Render(memdc);
+		p2_heroes[i]->Render(memdc);
 
-	int hero_x = p1_heroes[0]->get_x();
-	int hero_y = p1_heroes[0]->get_y();
+		if (p1_heroes[i]->Get_Move() == 1) is_moving = true;
+	}
 
-	if (p1_heroes[0]->Get_Move() == 1) return;
+	//한 명이라도 이동 중일 때 색 표시 건너뛰기
+	if (is_moving)
+	{
+		is_moving = false;
+		return;
+	}
 
 	//색 표시
 	if (gameplay.turn_action == make_pair<int, int>(1, gameplay.SELECT))
 	{
-		Show_Color(memdc, hero_x, hero_y, BLUE);
+		for (size_t i = 0; i < N_HEROES; i++)
+			Show_Color(memdc, p1_heroes[i]->get_x(), p1_heroes[i]->get_y(), BLUE);
 	}
 	else if (gameplay.turn_action == make_pair<int, int>(1, gameplay.MOVE))
 	{
-		Show_Color(memdc, hero_x, hero_y - GRID_WH, GREEN);
-		Show_Color(memdc, hero_x, hero_y + GRID_WH, GREEN);
-		Show_Color(memdc, hero_x - GRID_WH, hero_y, GREEN);
-		Show_Color(memdc, hero_x + GRID_WH, hero_y, GREEN);
+		pair<int, int> four_dir[4];
+		four_dir[0] = { select_x, select_y - GRID_WH };
+		four_dir[1] = { select_x, select_y + GRID_WH };
+		four_dir[2] = { select_x - GRID_WH, select_y };
+		four_dir[3] = { select_x + GRID_WH, select_y };
+
+		for (size_t dir_index = 0; dir_index < 4; dir_index++)
+		{
+			int tmp_x = Pos_To_Index(four_dir[dir_index].first);
+			int tmp_y = Pos_To_Index(four_dir[dir_index].second);
+
+			//위치를 간략화한 배열로 시간복잡도 줄이기
+			if (tiles_[tmp_y][tmp_x]->Value() == 1) continue;
+
+			Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
+		}
 	}
 	else 	if (gameplay.turn_action == make_pair<int, int>(1, gameplay.SKILL))
 	{
 		//바꿔야됨
-		Show_Color(memdc, hero_x, hero_y, YELLOW);
+		Show_Color(memdc, select_x, select_y, YELLOW);
 	}
+
 }
 
 void C_Board::Generate_Grid()
@@ -89,6 +111,17 @@ void C_Board::Generate_Grid()
 	for (size_t w = 0; w < BOARD_W; w++)
 	{
 		tiles_[h][w] = &river_tile;
+	}
+
+	//영웅 위치값 저장
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		tiles_[1][i]->Value(1);
+	}
+
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		tiles_[BOARD_H - 2][i]->Value(2);
 	}
 }
 
@@ -145,60 +178,73 @@ void C_Board::Act_Hero()
 		if (click_index == make_pair<int, int>(Pos_To_Index(p1_heroes[0]->get_x()), Pos_To_Index(p1_heroes[0]->get_y())))
 		{
 			//클릭 위치 저장
-			Select_x = p1_heroes[0]->get_x();
-			Select_y = p1_heroes[0]->get_y();
+			select_x = p1_heroes[0]->get_x();
+			select_y = p1_heroes[0]->get_y();
 			//이동 페이즈로 전환
 			++gameplay.turn_action.second;
 		}
+
+		//if (tiles_[click_index.second][click_index.first]->Value() == 1)
+		//{
+		//	//클릭 위치 저장
+		//	select_x = Index_To_Pos(click_index.first);
+		//	select_y = Index_To_Pos(click_index.second);
+		//	//이동 페이즈로 전환
+		//	++gameplay.turn_action.second;
+		//}
 	}
 	//이동 페이즈
 	else if (gameplay.turn_action == make_pair<int, int>(1, gameplay.MOVE))
 	{
 		//상
-		if (click_index == make_pair<int, int>(Pos_To_Index(Select_x), Pos_To_Index(Select_y) - 1))
+		if (click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
 			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(Select_x, Select_y - GRID_WH);
+			p1_heroes[0]->Move_Per_Frame(select_x, select_y - GRID_WH);
 			if (p1_heroes[0]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+				select_y -= GRID_WH;
 				p1_heroes[0]->Set_Move(0);
 			}
 		}
 		//하
-		else if (click_index == make_pair<int, int>(Pos_To_Index(Select_x), Pos_To_Index(Select_y) + 1))
+		else if (click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
 			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(Select_x, Select_y + GRID_WH);
+			p1_heroes[0]->Move_Per_Frame(select_x, select_y + GRID_WH);
 			if (p1_heroes[0]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+				select_y += GRID_WH;
 				p1_heroes[0]->Set_Move(0);
 			}
 		}
 		//좌
-		else if (click_index == make_pair<int, int>(Pos_To_Index(Select_x) - 1, Pos_To_Index(Select_y)))
+		else if (click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
 			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(Select_x - GRID_WH, Select_y);
+			p1_heroes[0]->Move_Per_Frame(select_x - GRID_WH, select_y);
 			if (p1_heroes[0]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+				select_x -= GRID_WH;
 				p1_heroes[0]->Set_Move(0);
 			}
 		}
 		//우
-		else if (click_index == make_pair<int, int>(Pos_To_Index(Select_x) + 1, Pos_To_Index(Select_y)))
+		else if (click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
 			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(Select_x + GRID_WH, Select_y);
+			p1_heroes[0]->Move_Per_Frame(select_x + GRID_WH, select_y);
 			if (p1_heroes[0]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+				select_x += GRID_WH;
 				p1_heroes[0]->Set_Move(0);
 			}
 		}

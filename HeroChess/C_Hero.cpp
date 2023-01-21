@@ -50,3 +50,26 @@ void C_Magician::Render(HDC memdc)
     //이미지DC 삭제
     DeleteDC(image_dc);
 }
+
+void C_Reaper::Render(HDC memdc)
+{
+    //애니메이션 카운트 업데이트 하기
+    if (move_ == 1)
+        count = ++count % (N_IMAGES - 1);
+    else
+        count = 0;
+
+    //이미지DC 생성
+    HDC image_dc = CreateCompatibleDC(memdc);
+    //해당 애니메이션 프레임 이미지DC에 넣기
+    HBITMAP oldBit = (HBITMAP)SelectObject(image_dc, ReaperBit[count]);
+
+    //이미지DC의 사진을 임시DC의 적절한 곳에 넣기
+    //정확한 이미지 크기가 들어가야 제대로 나온다.
+    TransparentBlt(memdc, x_, y_, GRID_WH, GRID_WH, image_dc, 0, 0, REAPER_W, REAPER_H, WHITE);
+
+    //이미지 지우기
+    SelectObject(image_dc, oldBit);
+    //이미지DC 삭제
+    DeleteDC(image_dc);
+}
