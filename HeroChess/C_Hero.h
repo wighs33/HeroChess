@@ -28,7 +28,7 @@ public:
 		: C_Hero(x, y)
     {
         for (int i = 0; i < N_IMAGES; i++)
-            MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2 + i));
+            MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
     }
     virtual ~C_Magician() override
     {
@@ -47,6 +47,8 @@ private:
 
     const int MAGICIAN_W = 48;
     const int MAGICIAN_H = 48;
+
+    inline static const int start = IDB_BITMAP2;
 };
 
 class C_Reaper : public C_Hero
@@ -56,7 +58,7 @@ public:
         : C_Hero(x, y)
     {
         for (int i = 0; i < N_IMAGES; i++)
-            ReaperBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP18 + i));
+            ReaperBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
     }
     virtual ~C_Reaper() override
     {
@@ -75,4 +77,37 @@ private:
 
     const int REAPER_W = 70;
     const int REAPER_H = 75;
+
+    inline static const int start = IDB_BITMAP18;
+};
+
+class C_Ninja : public C_Hero
+{
+public:
+    C_Ninja(int x, int y)
+        : C_Hero(x, y)
+    {
+        for (int i = 0; i < N_IMAGES; i++)
+            NinjaBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
+    }
+    virtual ~C_Ninja() override
+    {
+        for (auto& image : NinjaBit)
+            DeleteObject(image);
+    }
+    virtual void Render(HDC memdc) override;
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override
+    {
+        C_Hero::Move_Per_Frame(dest_x, dest_y);
+    }
+private:
+    static const int N_IMAGES = 9;
+
+    HBITMAP NinjaBit[N_IMAGES];
+
+    const int NINJA_W = 160;
+    const int NINJA_H = 160;
+
+    //юс╫ц
+    inline static const int start = IDB_BITMAP18;
 };

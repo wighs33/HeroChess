@@ -78,7 +78,7 @@ void C_Board::Render_Heroes(HDC memdc)
 			int tmp_y = Pos_To_Index(four_dir[dir_index].second);
 
 			//위치를 간략화한 배열로 시간복잡도 줄이기
-			if (tiles_[tmp_y][tmp_x]->Value() == 1) continue;
+			if (heroes_pos[tmp_y][tmp_x] == 1) continue;
 
 			Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
 		}
@@ -116,12 +116,8 @@ void C_Board::Generate_Grid()
 	//영웅 위치값 저장
 	for (size_t i = 0; i < N_HEROES; i++)
 	{
-		tiles_[1][i]->Value(1);
-	}
-
-	for (size_t i = 0; i < N_HEROES; i++)
-	{
-		tiles_[BOARD_H - 2][i]->Value(2);
+		heroes_pos[1][i] = 1;
+		heroes_pos[BOARD_H - 2][i] = 2;
 	}
 }
 
@@ -175,77 +171,99 @@ void C_Board::Act_Hero()
 	//선택 페이즈
 	if (gameplay.turn_action == make_pair<int, int>(1, gameplay.SELECT))
 	{
-		if (click_index == make_pair<int, int>(Pos_To_Index(p1_heroes[0]->get_x()), Pos_To_Index(p1_heroes[0]->get_y())))
+		if (heroes_pos[click_index.second][click_index.first] == 1)
 		{
 			//클릭 위치 저장
-			select_x = p1_heroes[0]->get_x();
-			select_y = p1_heroes[0]->get_y();
+			select_x = Index_To_Pos(click_index.first);
+			select_y = Index_To_Pos(click_index.second);
+
+			for (size_t i = 0; i < N_HEROES; i++)
+			{
+				if (p1_heroes[i]->get_x() == select_x and p1_heroes[i]->get_x() == select_y)
+				{
+					selected_index = i;
+					break;
+				}
+			}
+
 			//이동 페이즈로 전환
 			++gameplay.turn_action.second;
 		}
-
-		//if (tiles_[click_index.second][click_index.first]->Value() == 1)
-		//{
-		//	//클릭 위치 저장
-		//	select_x = Index_To_Pos(click_index.first);
-		//	select_y = Index_To_Pos(click_index.second);
-		//	//이동 페이즈로 전환
-		//	++gameplay.turn_action.second;
-		//}
 	}
 	//이동 페이즈
 	else if (gameplay.turn_action == make_pair<int, int>(1, gameplay.MOVE))
 	{
+		if (heroes_pos[click_index.second][click_index.first] == 1) return;
+
 		//상
 		if (click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
-			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(select_x, select_y - GRID_WH);
-			if (p1_heroes[0]->Get_Move() == 2)
+
+			//selected_index 활용해서 선택한 영웅 조작하기
+
+			p1_heroes[selected_index]->Set_Move(1);
+			p1_heroes[selected_index]->Move_Per_Frame(select_x, select_y - GRID_WH);
+			if (p1_heroes[selected_index]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+
 				select_y -= GRID_WH;
-				p1_heroes[0]->Set_Move(0);
+				heroes_pos[click_index.second][click_index.first] = 0;
+				heroes_pos[Pos_To_Index(select_x)][Pos_To_Index(select_y)] = 1;
+
+				p1_heroes[selected_index]->Set_Move(0);
 			}
 		}
 		//하
 		else if (click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
-			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(select_x, select_y + GRID_WH);
-			if (p1_heroes[0]->Get_Move() == 2)
+			p1_heroes[selected_index]->Set_Move(1);
+			p1_heroes[selected_index]->Move_Per_Frame(select_x, select_y + GRID_WH);
+			if (p1_heroes[selected_index]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+
 				select_y += GRID_WH;
-				p1_heroes[0]->Set_Move(0);
+				heroes_pos[click_index.second][click_index.first] = 0;
+				heroes_pos[Pos_To_Index(select_x)][Pos_To_Index(select_y)] = 1;
+
+				p1_heroes[selected_index]->Set_Move(0);
 			}
 		}
 		//좌
 		else if (click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
-			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(select_x - GRID_WH, select_y);
-			if (p1_heroes[0]->Get_Move() == 2)
+			p1_heroes[selected_index]->Set_Move(1);
+			p1_heroes[selected_index]->Move_Per_Frame(select_x - GRID_WH, select_y);
+			if (p1_heroes[selected_index]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+
 				select_x -= GRID_WH;
-				p1_heroes[0]->Set_Move(0);
+				heroes_pos[click_index.second][click_index.first] = 0;
+				heroes_pos[Pos_To_Index(select_x)][Pos_To_Index(select_y)] = 1;
+
+				p1_heroes[selected_index]->Set_Move(0);
 			}
 		}
 		//우
 		else if (click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)))
 		{
 			//이동할 때까지 기다리고 이동 다하면 다음 페이즈로
-			p1_heroes[0]->Set_Move(1);
-			p1_heroes[0]->Move_Per_Frame(select_x + GRID_WH, select_y);
-			if (p1_heroes[0]->Get_Move() == 2)
+			p1_heroes[selected_index]->Set_Move(1);
+			p1_heroes[selected_index]->Move_Per_Frame(select_x + GRID_WH, select_y);
+			if (p1_heroes[selected_index]->Get_Move() == 2)
 			{
 				++gameplay.turn_action.second;
+
 				select_x += GRID_WH;
-				p1_heroes[0]->Set_Move(0);
+				heroes_pos[click_index.second][click_index.first] = 0;
+				heroes_pos[Pos_To_Index(select_x)][Pos_To_Index(select_y)] = 1;
+
+				p1_heroes[selected_index]->Set_Move(0);
 			}
 		}
 	}

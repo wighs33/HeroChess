@@ -22,17 +22,8 @@ public:
 	{}
 
 	int Get_Color() const { return color_; }
-
-	int Value() const { return val_; }
-	void Value(int value) { val_ = value; }
-
 private:
 	int color_;
-
-	// 0 : ºó Ä­
-	// 1 : Player1
-	// 2 : Player2
-	int val_ = 0;
 };
 
 class C_Board
@@ -87,12 +78,17 @@ private:
 	shared_ptr<C_Hero> p1_heroes[BOARD_W];
 	shared_ptr<C_Hero> p2_heroes[BOARD_W];
 
+	// 0 : ºó Ä­
+	// 1 : Player1
+	// 2 : Player2
+	int heroes_pos[BOARD_H][BOARD_W];
+
 	GamePlay gameplay;
 
 	pair<int, int> click_index;
 
 	int select_x, select_y;
-
+	int selected_index;
 
 	static const int N_HEROES = 2;
 };
