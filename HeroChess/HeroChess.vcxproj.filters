@@ -144,5 +144,86 @@
     <Image Include="..\resource\Reaper5.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="..\resource\ninja1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja4.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja5.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja6.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja7.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja8.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\ninja9.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\Ghost1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\Ghost2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\Ghost3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\Ghost4.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\Ghost5.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\Ghost6.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\warrior1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\warrior2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\warrior3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\warrior4.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\warrior5.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\defender1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\defender2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\defender3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\knight1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\knight2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\knight3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\knight4.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

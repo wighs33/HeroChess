@@ -42,7 +42,7 @@ void C_Board::Render(HDC memdc)
 void C_Board::Render_Heroes(HDC memdc)
 {
 	bool is_moving = false;
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < N_HEROES; i++)
 	{
 		//영웅 들 그리기
 		p1_heroes[i]->Render(memdc);
@@ -179,7 +179,7 @@ void C_Board::Act_Hero()
 
 			for (size_t i = 0; i < N_HEROES; i++)
 			{
-				if (p1_heroes[i]->get_x() == select_x and p1_heroes[i]->get_x() == select_y)
+				if (p1_heroes[i]->get_x() == select_x and p1_heroes[i]->get_y() == select_y)
 				{
 					selected_index = i;
 					break;

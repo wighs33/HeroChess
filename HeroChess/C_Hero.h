@@ -1,6 +1,5 @@
 #pragma once
 #include "Resource.h"
-#include <cmath>
 
 class C_Hero
 {
@@ -45,8 +44,8 @@ private:
 
     HBITMAP MagicianBit[N_IMAGES];
 
-    const int MAGICIAN_W = 48;
-    const int MAGICIAN_H = 48;
+    const int MAGICIAN_W = 43;
+    const int MAGICIAN_H = 43;
 
     inline static const int start = IDB_BITMAP2;
 };
@@ -108,6 +107,125 @@ private:
     const int NINJA_W = 160;
     const int NINJA_H = 160;
 
-    //юс╫ц
-    inline static const int start = IDB_BITMAP18;
+    inline static const int start = IDB_BITMAP23;
+};
+
+class C_Ghost : public C_Hero
+{
+public:
+    C_Ghost(int x, int y)
+        : C_Hero(x, y)
+    {
+        for (int i = 0; i < N_IMAGES; i++)
+            GhostBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
+    }
+    virtual ~C_Ghost() override
+    {
+        for (auto& image : GhostBit)
+            DeleteObject(image);
+    }
+    virtual void Render(HDC memdc) override;
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override
+    {
+        C_Hero::Move_Per_Frame(dest_x, dest_y);
+    }
+private:
+    static const int N_IMAGES = 6;
+
+    HBITMAP GhostBit[N_IMAGES];
+
+    const int GHOST_W = 48;
+    const int GHOST_H = 48;
+
+    inline static const int start = IDB_BITMAP32;
+};
+
+class C_Warrior : public C_Hero
+{
+public:
+    C_Warrior(int x, int y)
+        : C_Hero(x, y)
+    {
+        for (int i = 0; i < N_IMAGES; i++)
+            WarriorBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
+    }
+    virtual ~C_Warrior() override
+    {
+        for (auto& image : WarriorBit)
+            DeleteObject(image);
+    }
+    virtual void Render(HDC memdc) override;
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override
+    {
+        C_Hero::Move_Per_Frame(dest_x, dest_y);
+    }
+private:
+    static const int N_IMAGES = 5;
+
+    HBITMAP WarriorBit[N_IMAGES];
+
+    const int WARRIOR_W = 100;
+    const int WARRIOR_H = 100;
+
+    inline static const int start = IDB_BITMAP38;
+};
+
+class C_Defender : public C_Hero
+{
+public:
+    C_Defender(int x, int y)
+        : C_Hero(x, y)
+    {
+        for (int i = 0; i < N_IMAGES; i++)
+            DefenderBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
+    }
+    virtual ~C_Defender() override
+    {
+        for (auto& image : DefenderBit)
+            DeleteObject(image);
+    }
+    virtual void Render(HDC memdc) override;
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override
+    {
+        C_Hero::Move_Per_Frame(dest_x, dest_y);
+    }
+private:
+    static const int N_IMAGES = 3;
+
+    HBITMAP DefenderBit[N_IMAGES];
+
+    const int DEFENDER_W = 140;
+    const int DEFENDER_H = 140;
+
+    inline static const int start = IDB_BITMAP43;
+};
+
+class C_Knight : public C_Hero
+{
+public:
+    C_Knight(int x, int y)
+        : C_Hero(x, y)
+    {
+        for (int i = 0; i < N_IMAGES; i++)
+            KnightBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
+    }
+    virtual ~C_Knight() override
+    {
+        for (auto& image : KnightBit)
+            DeleteObject(image);
+    }
+    virtual void Render(HDC memdc) override;
+    virtual void Move_Per_Frame(int dest_x, int dest_y) override
+    {
+        C_Hero::Move_Per_Frame(dest_x, dest_y);
+    }
+private:
+    static const int N_IMAGES = 4;
+
+    HBITMAP KnightBit[N_IMAGES];
+
+    const int KNIGHT_W = 80;
+    const int KNIGHT_H = 80;
+
+    inline static const int start = IDB_BITMAP46;
 };

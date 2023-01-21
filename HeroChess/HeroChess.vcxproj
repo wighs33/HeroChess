@@ -169,6 +169,19 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\resource\bitmap1.bmp" />
+    <Image Include="..\resource\defender1.bmp" />
+    <Image Include="..\resource\defender2.bmp" />
+    <Image Include="..\resource\defender3.bmp" />
+    <Image Include="..\resource\Ghost1.bmp" />
+    <Image Include="..\resource\Ghost2.bmp" />
+    <Image Include="..\resource\Ghost3.bmp" />
+    <Image Include="..\resource\Ghost4.bmp" />
+    <Image Include="..\resource\Ghost5.bmp" />
+    <Image Include="..\resource\Ghost6.bmp" />
+    <Image Include="..\resource\knight1.bmp" />
+    <Image Include="..\resource\knight2.bmp" />
+    <Image Include="..\resource\knight3.bmp" />
+    <Image Include="..\resource\knight4.bmp" />
     <Image Include="..\resource\magician1.bmp" />
     <Image Include="..\resource\magician10.bmp" />
     <Image Include="..\resource\magician11.bmp" />
@@ -185,11 +198,25 @@
     <Image Include="..\resource\magician7.bmp" />
     <Image Include="..\resource\magician8.bmp" />
     <Image Include="..\resource\magician9.bmp" />
+    <Image Include="..\resource\ninja1.bmp" />
+    <Image Include="..\resource\ninja2.bmp" />
+    <Image Include="..\resource\ninja3.bmp" />
+    <Image Include="..\resource\ninja4.bmp" />
+    <Image Include="..\resource\ninja5.bmp" />
+    <Image Include="..\resource\ninja6.bmp" />
+    <Image Include="..\resource\ninja7.bmp" />
+    <Image Include="..\resource\ninja8.bmp" />
+    <Image Include="..\resource\ninja9.bmp" />
     <Image Include="..\resource\Reaper1.bmp" />
     <Image Include="..\resource\Reaper2.bmp" />
     <Image Include="..\resource\Reaper3.bmp" />
     <Image Include="..\resource\Reaper4.bmp" />
     <Image Include="..\resource\Reaper5.bmp" />
+    <Image Include="..\resource\warrior1.bmp" />
+    <Image Include="..\resource\warrior2.bmp" />
+    <Image Include="..\resource\warrior3.bmp" />
+    <Image Include="..\resource\warrior4.bmp" />
+    <Image Include="..\resource\warrior5.bmp" />
     <Image Include="HeroChess.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

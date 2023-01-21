@@ -39,9 +39,19 @@ public:
 
 		p1_heroes[0] = make_shared<C_Magician>(Index_To_Pos(0), Index_To_Pos(1));
 		p1_heroes[1] = make_shared<C_Reaper>(Index_To_Pos(1), Index_To_Pos(1));
+		p1_heroes[2] = make_shared<C_Ninja>(Index_To_Pos(2), Index_To_Pos(1));
+		p1_heroes[3] = make_shared<C_Ghost>(Index_To_Pos(3), Index_To_Pos(1));
+		p1_heroes[4] = make_shared<C_Warrior>(Index_To_Pos(4), Index_To_Pos(1));
+		p1_heroes[5] = make_shared<C_Defender>(Index_To_Pos(5), Index_To_Pos(1));
+		p1_heroes[6] = make_shared<C_Knight>(Index_To_Pos(6), Index_To_Pos(1));
 
 		p2_heroes[0] = make_shared<C_Magician>(Index_To_Pos(BOARD_W - 1), Index_To_Pos(BOARD_H - 2));
 		p2_heroes[1] = make_shared<C_Reaper>(Index_To_Pos(BOARD_W - 2), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[2] = make_shared<C_Ninja>(Index_To_Pos(BOARD_W - 3), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[3] = make_shared<C_Ghost>(Index_To_Pos(BOARD_W - 4), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[4] = make_shared<C_Warrior>(Index_To_Pos(BOARD_W - 5), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[5] = make_shared<C_Defender>(Index_To_Pos(BOARD_W - 6), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[6] = make_shared<C_Knight>(Index_To_Pos(BOARD_W - 7), Index_To_Pos(BOARD_H - 2));
 	}
 
 	void Render(HDC memdc);
@@ -90,5 +100,6 @@ private:
 	int select_x, select_y;
 	int selected_index;
 
-	static const int N_HEROES = 2;
+	//영웅 추가 시 생성자에서 할당
+	static const int N_HEROES = 7;
 };
