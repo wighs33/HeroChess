@@ -15,7 +15,6 @@
 #define IDR_MENU1                       129
 #define IDB_BITMAP1                     130
 #define IDB_BITMAP2                     131
-#define IDB_BITMAP_MAGICIAN2            132
 #define IDB_BITMAP3                     132
 #define IDB_BITMAP4                     133
 #define IDB_BITMAP5                     134
@@ -31,6 +30,11 @@
 #define IDB_BITMAP15                    144
 #define IDB_BITMAP16                    145
 #define IDB_BITMAP17                    146
+#define IDB_BITMAP18                    147
+#define IDB_BITMAP19                    148
+#define IDB_BITMAP20                    149
+#define IDB_BITMAP21                    150
+#define IDB_BITMAP22                    151
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -44,7 +48,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        147
+#define _APS_NEXT_RESOURCE_VALUE        152
 #define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110

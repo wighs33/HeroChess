@@ -4,8 +4,8 @@
 void C_Magician::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
-    if (move_==1)
-        count = ++count % 16;
+    if (move_ == 1)
+        count = ++count % (N_IMAGES - 1);
     else
         count = 0;
 
