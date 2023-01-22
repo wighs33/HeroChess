@@ -33,7 +33,7 @@ void C_Magician::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -52,11 +52,33 @@ void C_Magician::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
+void C_Magician::Use_Skill(C_Hero& hero)
+{
+    cout << count << endl;
+
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+
+    int tmp_x = x_;
+    int tmp_y = y_;
+
+    x_ = hero.get_x();
+    y_ = hero.get_y();
+
+    hero.set_x(tmp_x);
+    hero.set_y(tmp_y);
+}
+
 void C_Reaper::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -75,11 +97,15 @@ void C_Reaper::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
+void C_Reaper::Use_Skill(C_Hero& hero)
+{
+}
+
 void C_Ninja::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -98,11 +124,15 @@ void C_Ninja::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
+void C_Ninja::Use_Skill(C_Hero& hero)
+{
+}
+
 void C_Ghost::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -121,11 +151,15 @@ void C_Ghost::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
+void C_Ghost::Use_Skill(C_Hero& hero)
+{
+}
+
 void C_Warrior::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -144,11 +178,15 @@ void C_Warrior::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
+void C_Warrior::Use_Skill(C_Hero& hero)
+{
+}
+
 void C_Defender::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -167,11 +205,15 @@ void C_Defender::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
+void C_Defender::Use_Skill(C_Hero& hero)
+{
+}
+
 void C_Knight::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
     if (move_ == 1)
-        count = ++count % (N_IMAGES - 1);
+        count = ++count % N_IMAGES;
     else
         count = 0;
 
@@ -188,4 +230,8 @@ void C_Knight::Render(HDC memdc)
     SelectObject(image_dc, oldBit);
     //이미지DC 삭제
     DeleteDC(image_dc);
+}
+
+void C_Knight::Use_Skill(C_Hero& hero)
+{
 }

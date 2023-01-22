@@ -85,8 +85,13 @@ void C_Board::Render_Heroes(HDC memdc)
 	}
 	else 	if (gameplay.turn_action == make_pair<int, int>(1, gameplay.SKILL))
 	{
-		//¹Ù²ã¾ßµÊ
-		Show_Color(memdc, select_x, select_y, YELLOW);
+		if (selected_index == 0)
+		{
+			for (size_t i = 1; i < N_HEROES; i++)
+			{
+				Show_Color(memdc, p1_heroes[i]->get_x(), p1_heroes[i]->get_y(), YELLOW);
+			}
+		}
 	}
 
 }
@@ -274,6 +279,21 @@ void C_Board::Act_Hero()
 		//{
 		//	++gameplay.turn_action.first;
 		//}
+
+		if (heroes_pos[click_index.second][click_index.first] == 1)
+			for (size_t i = 0; i < N_HEROES; i++)
+			{
+				pair<int, int> tmp = { Pos_To_Index(p1_heroes[i]->get_x()), Pos_To_Index(p1_heroes[i]->get_y()) };
+				if (click_index == tmp)
+				{
+					p1_heroes[selected_index]->Set_Move(1);
+					p1_heroes[selected_index]->Use_Skill(*p1_heroes[i]);
+
+					if (p1_heroes[selected_index]->Get_Move() == 0)
+						++gameplay.turn_action.first;
+					break;
+				}
+			}
 	}
 
 	//click_index = { -1, -1 };
