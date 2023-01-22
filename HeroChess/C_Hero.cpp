@@ -54,8 +54,6 @@ void C_Magician::Render(HDC memdc)
 
 void C_Magician::Use_Skill(C_Hero& hero)
 {
-    cout << count << endl;
-
     if (count == N_IMAGES - 1)
     {
         move_ = 0;
@@ -63,7 +61,7 @@ void C_Magician::Use_Skill(C_Hero& hero)
     }
     if (move_ == 1) return;
 
-
+    //마법사 능력 : 위치 체인지
     int tmp_x = x_;
     int tmp_y = y_;
 
