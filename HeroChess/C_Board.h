@@ -77,6 +77,8 @@ public:
 
 	void Turn_Change();
 
+	shared_ptr<C_Hero>& Find_Hero_By_Index(int x, int y);
+
 private:
 	C_Grid grass_tile;
 	C_Grid ground_tile;

@@ -158,11 +158,22 @@ void C_Board::Render_Heroes(HDC memdc)
 		}
 		else if (selected_index == GHOST)
 		{
-			if (Pos_To_Index(select_y) != 9)
-			{
-				Turn_Change();
-				return;
-			}
+			//적진 끝에 도달하지 않으면 자동 턴 교체
+			//player1 일 때
+			if(gameplay.turn_action.first == 1)
+				if (Pos_To_Index(select_y) != BOARD_H - 1)
+				{
+					Turn_Change();
+					return;
+				}
+
+			//player2 일 때
+			if (gameplay.turn_action.first == 2)
+				if (Pos_To_Index(select_y) != 0)
+				{
+					Turn_Change();
+					return;
+				}
 
 			for (size_t i = 0; i < N_HEROES; i++)
 			{
@@ -224,6 +235,9 @@ void C_Board::Show_Color(HDC memdc, int rect_x, int rect_y, int color)
 
 void C_Board::Check_Click(int x, int y)
 {
+	//애니메이션 중 클릭 갱신 막기
+	if (p1_heroes[selected_index]->Get_Move() == 1 or p2_heroes[selected_index]->Get_Move() == 1) return;
+
 	click_index = { -1, -1 };
 
 	//click_index에 클릭한 칸의 인덱스 넣기
@@ -349,13 +363,6 @@ void C_Board::Act_Hero()
 	//능력 사용 페이즈
 	else 	if (gameplay.turn_action.second == gameplay.SKILL)
 	{
-		//상대 영웅들 저장
-		auto opposing_heroes = heroes;
-		if (gameplay.turn_action.first == 1)
-			opposing_heroes = p2_heroes;
-		else
-			opposing_heroes = p1_heroes;
-
 		//마법사
 		if (selected_index == MAGICIAN)
 		{
@@ -438,7 +445,56 @@ void C_Board::Act_Hero()
 		//고스트
 		else if (selected_index == GHOST)
 		{
-			Turn_Change();
+			//적용 대상 : 상대
+			if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
+				heroes_pos[click_index.second][click_index.first] == 0)
+			{
+				Turn_Change();
+				return;
+			}
+
+
+			//클릭한 영웅 찾기
+			for (size_t i = 0; i < N_HEROES; i++)
+			{
+				pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
+				if (click_index == tmp)
+				{
+					//스킬 사용
+					heroes[selected_index]->Use_Skill(opposing_heroes[i]);
+
+					//턴 교체
+					if (heroes[selected_index]->Get_Move() == 1) return;
+
+					int tmp_iy;
+					if (gameplay.turn_action.first == 1)
+					{
+						tmp_iy = 1;
+					}
+					else
+					{
+						tmp_iy = BOARD_H - 2;
+					}
+
+					//초기 자리에 영웅 있을 때 삭제
+					auto tmp_hero = Find_Hero_By_Index(3, tmp_iy);
+					if (tmp_hero)
+					{
+						tmp_hero.reset();
+						tmp_hero = make_shared<C_None>(0, 0);
+					}
+
+					//초기 자리로 돌아가기
+					heroes[selected_index]->set_x(Index_To_Pos(3));
+					heroes[selected_index]->set_y(Index_To_Pos(tmp_iy));
+					heroes_pos[tmp_iy][3] = gameplay.turn_action.first;
+
+					heroes_pos[click_index.second][click_index.first] = 0;
+					heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+					Turn_Change();
+					break;
+				}
+			}
 		}
 		//다른 영웅 임시 적용
 		else
@@ -456,4 +512,18 @@ void C_Board::Turn_Change()
 		gameplay.turn_action.first = 1;
 	gameplay.turn_action.second = gameplay.SELECT;
 	click_index = { -1,-1 };
+}
+
+shared_ptr<C_Hero>& C_Board::Find_Hero_By_Index(int ix, int iy)
+{
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		if (p1_heroes[i]->get_x() == Index_To_Pos(ix) and p1_heroes[i]->get_y() == Index_To_Pos(iy))
+			return p1_heroes[i];
+		else if (p2_heroes[i]->get_x() == Index_To_Pos(ix) and p2_heroes[i]->get_y() == Index_To_Pos(iy))
+			return p2_heroes[i];
+	}
+
+	shared_ptr<C_Hero> tmp = make_shared<C_None>(0, 0);
+	return tmp;
 }
