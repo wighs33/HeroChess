@@ -59,8 +59,12 @@ void C_Board::Render(HDC memdc)
 void C_Board::Render_Heroes(HDC memdc)
 {
 	auto heroes = p1_heroes;
-	if(gameplay.turn_action.first == 2)
+	auto opposing_heroes = p2_heroes;
+	if (gameplay.turn_action.first == 2)
+	{
 		heroes = p2_heroes;
+		opposing_heroes = p1_heroes;
+	}
 
 	bool is_moving = false;
 	for (size_t i = 0; i < N_HEROES; i++)
@@ -110,14 +114,14 @@ void C_Board::Render_Heroes(HDC memdc)
 	}
 	else if (gameplay.turn_action.second == gameplay.SKILL)
 	{
-		if (selected_index == 0)
+		if (selected_index == MAGICIAN)
 		{
 			for (size_t i = 1; i < N_HEROES; i++)
 			{
 				Show_Color(memdc, heroes[i]->get_x(), heroes[i]->get_y(), YELLOW);
 			}
 		}
-		else if(selected_index == 1)
+		else if(selected_index == REAPER)
 		{
 			pair<int, int> four_dir[8];
 			four_dir[0] = { select_x, select_y - GRID_WH };
@@ -146,6 +150,23 @@ void C_Board::Render_Heroes(HDC memdc)
 			if (tmp_cnt == 0)
 			{
 				Turn_Change();
+			}
+		}
+		else if (selected_index == NINJA)
+		{
+			
+		}
+		else if (selected_index == GHOST)
+		{
+			if (Pos_To_Index(select_y) != 9)
+			{
+				Turn_Change();
+				return;
+			}
+
+			for (size_t i = 0; i < N_HEROES; i++)
+			{
+				Show_Color(memdc, opposing_heroes[i]->get_x(), opposing_heroes[i]->get_y(), YELLOW);
 			}
 		}
 	}
@@ -229,8 +250,12 @@ void C_Board::Act_Hero()
 	if (click_index.first == -1 || click_index.second == -1) return;
 
 	auto heroes = p1_heroes;
+	auto opposing_heroes = p2_heroes;
 	if (gameplay.turn_action.first == 2)
+	{
 		heroes = p2_heroes;
+		opposing_heroes = p1_heroes;
+	}
 
 
 	//선택 페이즈
@@ -332,7 +357,7 @@ void C_Board::Act_Hero()
 			opposing_heroes = p1_heroes;
 
 		//마법사
-		if (selected_index == 0)
+		if (selected_index == MAGICIAN)
 		{
 			//적용 대상 : 아군
 			//아군 아닐 때 턴 교체 후 리턴
@@ -361,7 +386,7 @@ void C_Board::Act_Hero()
 			}
 		}
 		//사신
-		else if (selected_index == 1)
+		else if (selected_index == REAPER)
 		{
 			//적용 대상 : 상대
 			if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
@@ -404,6 +429,16 @@ void C_Board::Act_Hero()
 					break;
 				}
 			}
+		}
+		//닌자
+		else if (selected_index == NINJA)
+		{
+			Turn_Change();
+		}
+		//고스트
+		else if (selected_index == GHOST)
+		{
+			Turn_Change();
 		}
 		//다른 영웅 임시 적용
 		else

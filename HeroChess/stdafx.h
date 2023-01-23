@@ -39,3 +39,14 @@ static WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 �
 
 static uniform_int_distribution uid(0, 5);
 static default_random_engine dre;
+
+enum HERO
+{
+	MAGICIAN = 0,
+	REAPER,
+	NINJA,
+	GHOST,
+	WARRIOR,
+	DEFENDER,
+	KNIGHT
+};
