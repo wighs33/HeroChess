@@ -50,7 +50,7 @@ void C_Magician::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Magician::Use_Skill(C_Hero& hero)
+void C_Magician::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;
@@ -65,11 +65,11 @@ void C_Magician::Use_Skill(C_Hero& hero)
     int tmp_x = x_;
     int tmp_y = y_;
 
-    x_ = hero.get_x();
-    y_ = hero.get_y();
+    x_ = hero->get_x();
+    y_ = hero->get_y();
 
-    hero.set_x(tmp_x);
-    hero.set_y(tmp_y);
+    hero->set_x(tmp_x);
+    hero->set_y(tmp_y);
 }
 
 void C_Reaper::Render(HDC memdc)
@@ -95,7 +95,7 @@ void C_Reaper::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Reaper::Use_Skill(C_Hero& hero)
+void C_Reaper::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;
@@ -107,6 +107,8 @@ void C_Reaper::Use_Skill(C_Hero& hero)
     if (move_ == 1) return;
 
     //사신 능력 : 주위 영웅 한명 제거
+    hero.reset();
+    hero = make_shared<C_None>(0, 0);
 }
 
 void C_Ninja::Render(HDC memdc)
@@ -132,7 +134,7 @@ void C_Ninja::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Ninja::Use_Skill(C_Hero& hero)
+void C_Ninja::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;
@@ -169,7 +171,7 @@ void C_Ghost::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Ghost::Use_Skill(C_Hero& hero)
+void C_Ghost::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;
@@ -206,7 +208,7 @@ void C_Warrior::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Warrior::Use_Skill(C_Hero& hero)
+void C_Warrior::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;
@@ -243,7 +245,7 @@ void C_Defender::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Defender::Use_Skill(C_Hero& hero)
+void C_Defender::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;
@@ -280,7 +282,7 @@ void C_Knight::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Knight::Use_Skill(C_Hero& hero)
+void C_Knight::Use_Skill(shared_ptr<C_Hero>& hero)
 {
     //애니메이션 재생
     move_ = 1;

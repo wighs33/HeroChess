@@ -45,12 +45,12 @@ void C_Board::Render(HDC memdc)
 		}
 
 	static TCHAR lpOut2[100];
-	wsprintf(lpOut2, _T("%d %d"), gameplay.turn_action.first, gameplay.turn_action.second);
+	wsprintf(lpOut2, _T("turn_action : %d %d"), gameplay.turn_action.first, gameplay.turn_action.second);
 	TextOut(memdc, 20, 20, lpOut2, lstrlen(lpOut2));
 
 	static TCHAR lpOut3[100];
-	wsprintf(lpOut3, _T("%d %d"), click_index.first, click_index.second);
-	TextOut(memdc, 20, 50, lpOut3, lstrlen(lpOut3));
+	wsprintf(lpOut3, _T("click_index : %d %d"), click_index.first, click_index.second);
+	TextOut(memdc, 20, 40, lpOut3, lstrlen(lpOut3));
 
 	SelectObject(memdc, oldbrush);
 	DeleteObject(hpen);
@@ -119,22 +119,33 @@ void C_Board::Render_Heroes(HDC memdc)
 		}
 		else if(selected_index == 1)
 		{
-			pair<int, int> four_dir[4];
+			pair<int, int> four_dir[8];
 			four_dir[0] = { select_x, select_y - GRID_WH };
 			four_dir[1] = { select_x, select_y + GRID_WH };
 			four_dir[2] = { select_x - GRID_WH, select_y };
 			four_dir[3] = { select_x + GRID_WH, select_y };
+			four_dir[4] = { select_x - GRID_WH, select_y - GRID_WH };
+			four_dir[5] = { select_x + GRID_WH, select_y - GRID_WH };
+			four_dir[6] = { select_x - GRID_WH, select_y + GRID_WH };
+			four_dir[7] = { select_x + GRID_WH, select_y + GRID_WH };
 
-			for (size_t dir_index = 0; dir_index < 4; dir_index++)
+			int tmp_cnt = 0;
+			for (size_t dir_index = 0; dir_index < 8; dir_index++)
 			{
 				int tmp_x = Pos_To_Index(four_dir[dir_index].first);
 				int tmp_y = Pos_To_Index(four_dir[dir_index].second);
 
-				//위치를 간략화한 배열로 시간복잡도 줄이기
-				if (heroes_pos[tmp_y][tmp_x] == gameplay.turn_action.first) continue;
-
-				if (heroes_pos[tmp_y][tmp_x] != 0)
+				if (heroes_pos[tmp_y][tmp_x] != gameplay.turn_action.first and heroes_pos[tmp_y][tmp_x] != 0)
+				{
 					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, YELLOW);
+					++tmp_cnt;
+				}
+			}
+
+			// 적용 대상 없으면 자동으로 턴 교체
+			if (tmp_cnt == 0)
+			{
+				Turn_Change();
 			}
 		}
 	}
@@ -321,10 +332,15 @@ void C_Board::Act_Hero()
 			opposing_heroes = p1_heroes;
 
 		//마법사
-		//if (selected_index == 0)
+		if (selected_index == 0)
 		{
 			//적용 대상 : 아군
-			if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first) return;
+			//아군 아닐 때 턴 교체 후 리턴
+			if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first)
+			{
+				Turn_Change();
+				return;
+			}
 
 			//클릭한 영웅 찾기
 			for (size_t i = 0; i < N_HEROES; i++)
@@ -333,56 +349,76 @@ void C_Board::Act_Hero()
 				if (click_index == tmp)
 				{
 					//스킬 사용
-					heroes[selected_index]->Use_Skill(*heroes[i]);
+					heroes[selected_index]->Use_Skill(heroes[i]);
 
 					//턴 교체
 					if (heroes[selected_index]->Get_Move() == 0)
 					{
-						if (gameplay.turn_action.first == 1)
-							gameplay.turn_action.first = 2;
-						else
-							gameplay.turn_action.first = 1;
-						gameplay.turn_action.second = gameplay.SELECT;
+						Turn_Change();
 					}
 					break;
 				}
 			}
 		}
-		////사신
-		//else if (selected_index == 1)
-		//{
-		//	//적용 대상 : 상대
-		//	if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
-		//		heroes_pos[click_index.second][click_index.first] == 0) return;
+		//사신
+		else if (selected_index == 1)
+		{
+			//적용 대상 : 상대
+			if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
+				heroes_pos[click_index.second][click_index.first] == 0)
+			{
+				Turn_Change();
+				return;
+			}
 
-		//	//범위 : 한 칸 반경
-		//	if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
-		//		click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
-		//		click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
-		//		click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y))))
-		//		return;
-		//	
-		//	//클릭한 영웅 찾기
-		//	for (size_t i = 0; i < N_HEROES; i++)
-		//	{
-		//		pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
-		//		if (click_index == tmp)
-		//		{
-		//			//스킬 사용
-		//			heroes[selected_index]->Use_Skill(*opposing_heroes[i]);
+			//범위 : 한 칸 반경
+			if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) + 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) - 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) + 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) - 1)
+				))
+			{
+				Turn_Change();
+				return;
+			}
+			
+			//클릭한 영웅 찾기
+			for (size_t i = 0; i < N_HEROES; i++)
+			{
+				pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
+				if (click_index == tmp)
+				{
+					//스킬 사용
+					heroes[selected_index]->Use_Skill(opposing_heroes[i]);
 
-		//			//턴 교체
-		//			if (heroes[selected_index]->Get_Move() == 0)
-		//			{
-		//				if (gameplay.turn_action.first == 1)
-		//					gameplay.turn_action.first = 2;
-		//				else
-		//					gameplay.turn_action.first = 1;
-		//				gameplay.turn_action.second = gameplay.SELECT;
-		//			}
-		//			break;
-		//		}
-		//	}
-		//}
+					//턴 교체
+					if (heroes[selected_index]->Get_Move() == 0)
+					{
+						heroes_pos[click_index.second][click_index.first] = 0;
+						Turn_Change();
+					}
+					break;
+				}
+			}
+		}
+		//다른 영웅 임시 적용
+		else
+		{
+			Turn_Change();
+		}
 	}
+}
+
+void C_Board::Turn_Change()
+{
+	if (gameplay.turn_action.first == 1)
+		gameplay.turn_action.first = 2;
+	else
+		gameplay.turn_action.first = 1;
+	gameplay.turn_action.second = gameplay.SELECT;
+	click_index = { -1,-1 };
 }

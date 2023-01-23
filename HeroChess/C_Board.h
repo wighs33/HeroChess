@@ -75,6 +75,8 @@ public:
 
 	void Act_Hero();
 
+	void Turn_Change();
+
 private:
 	C_Grid grass_tile;
 	C_Grid ground_tile;
