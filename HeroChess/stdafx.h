@@ -28,6 +28,7 @@ static const int BLUE = RGB(0, 0, 255);
 static const int GREEN = RGB(0, 255, 0);
 static const int YELLOW = RGB(255, 230, 0);
 static const int RED = RGB(255, 0, 0);
+static const int GRAY = RGB(100, 100, 100);
 static const int WIN_W = 560;
 static const int WIN_H = 780;
 static const int GRID_WH = 60;
@@ -49,4 +50,11 @@ enum HERO
 	WARRIOR,
 	DEFENDER,
 	KNIGHT
+};
+
+enum WHO
+{
+	PLAYER1 = 1,
+	PLAYER2,
+	ALL
 };

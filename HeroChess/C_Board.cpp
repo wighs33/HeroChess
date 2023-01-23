@@ -84,6 +84,14 @@ void C_Board::Render_Heroes(HDC memdc)
 		return;
 	}
 
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		if (heroes[i]->Is_Bound())
+			Show_Color(memdc, heroes[i]->get_x(), heroes[i]->get_y(), GRAY);
+		if (opposing_heroes[i]->Is_Bound())
+			Show_Color(memdc, opposing_heroes[i]->get_x(), opposing_heroes[i]->get_y(), GRAY);
+	}
+
 	//색 표시
 	if (gameplay.turn_action.second == gameplay.SELECT)
 	{
@@ -123,25 +131,25 @@ void C_Board::Render_Heroes(HDC memdc)
 		}
 		else if(selected_index == REAPER)
 		{
-			pair<int, int> four_dir[8];
-			four_dir[0] = { select_x, select_y - GRID_WH };
-			four_dir[1] = { select_x, select_y + GRID_WH };
-			four_dir[2] = { select_x - GRID_WH, select_y };
-			four_dir[3] = { select_x + GRID_WH, select_y };
-			four_dir[4] = { select_x - GRID_WH, select_y - GRID_WH };
-			four_dir[5] = { select_x + GRID_WH, select_y - GRID_WH };
-			four_dir[6] = { select_x - GRID_WH, select_y + GRID_WH };
-			four_dir[7] = { select_x + GRID_WH, select_y + GRID_WH };
+			pair<int, int> eight_dir[8];
+			eight_dir[0] = { select_x, select_y - GRID_WH };
+			eight_dir[1] = { select_x, select_y + GRID_WH };
+			eight_dir[2] = { select_x - GRID_WH, select_y };
+			eight_dir[3] = { select_x + GRID_WH, select_y };
+			eight_dir[4] = { select_x - GRID_WH, select_y - GRID_WH };
+			eight_dir[5] = { select_x + GRID_WH, select_y - GRID_WH };
+			eight_dir[6] = { select_x - GRID_WH, select_y + GRID_WH };
+			eight_dir[7] = { select_x + GRID_WH, select_y + GRID_WH };
 
 			int tmp_cnt = 0;
 			for (size_t dir_index = 0; dir_index < 8; dir_index++)
 			{
-				int tmp_x = Pos_To_Index(four_dir[dir_index].first);
-				int tmp_y = Pos_To_Index(four_dir[dir_index].second);
+				int tmp_x = Pos_To_Index(eight_dir[dir_index].first);
+				int tmp_y = Pos_To_Index(eight_dir[dir_index].second);
 
 				if (heroes_pos[tmp_y][tmp_x] != gameplay.turn_action.first and heroes_pos[tmp_y][tmp_x] != 0)
 				{
-					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, YELLOW);
+					Show_Color(memdc, eight_dir[dir_index].first, eight_dir[dir_index].second, YELLOW);
 					++tmp_cnt;
 				}
 			}
@@ -179,6 +187,10 @@ void C_Board::Render_Heroes(HDC memdc)
 			{
 				Show_Color(memdc, opposing_heroes[i]->get_x(), opposing_heroes[i]->get_y(), YELLOW);
 			}
+		}
+		else if (selected_index == WARRIOR)
+		{
+			//자동
 		}
 	}
 }
@@ -260,6 +272,12 @@ void C_Board::Check_Click(int x, int y)
 
 void C_Board::Act_Hero()
 {
+	//전사 선택 시 클릭없이 자동 능력 사용
+	if (selected_index == 4 and gameplay.turn_action.second == gameplay.SKILL)
+	{
+		click_index = { -2,-2 };
+	}
+
 	//보드 밖 클릭하면 리턴
 	if (click_index.first == -1 || click_index.second == -1) return;
 
@@ -285,6 +303,8 @@ void C_Board::Act_Hero()
 			{
 				if (heroes[i]->get_x() == select_x and heroes[i]->get_y() == select_y)
 				{
+					if (heroes[i]->Is_Bound() == true) return;
+
 					//선택한 영웅 인덱스 저장
 					selected_index = i;
 					break;
@@ -453,77 +473,105 @@ void C_Board::Act_Hero()
 				return;
 			}
 
+			//제거할 영웅
+			auto& target_hero = Find_Hero_By_Index(((gameplay.turn_action.first - 1) ^ 1) + 1, click_index.first, click_index.second);
 
-			//클릭한 영웅 찾기
+			//스킬 사용
+			heroes[selected_index]->Use_Skill(target_hero);
+
+			//이동 중일 때 리턴
+			if (heroes[selected_index]->Get_Move() == 1) return;
+
+			int tmp_iy;
+			if (gameplay.turn_action.first == 1)
+				tmp_iy = 1;
+			else
+				tmp_iy = BOARD_H - 2;
+
+			//초기 자리에 영웅 있을 때 삭제
+			auto& tmp_hero = Find_Hero_By_Index(ALL, 3, tmp_iy);
+			if (tmp_hero)
+			{
+				tmp_hero.reset();
+				tmp_hero = make_shared<C_None>(0, 0);
+			}
+
+			//초기 자리로 돌아가기
+			heroes[selected_index]->set_x(Index_To_Pos(3));
+			heroes[selected_index]->set_y(Index_To_Pos(tmp_iy));
+			heroes_pos[tmp_iy][3] = gameplay.turn_action.first;
+
+			heroes_pos[click_index.second][click_index.first] = 0;
+			heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+			Turn_Change();
+		}
+		//전사
+		else if (selected_index == WARRIOR)
+		{
 			for (size_t i = 0; i < N_HEROES; i++)
 			{
-				pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
-				if (click_index == tmp)
+				opposing_heroes[i]->Is_Bound(false);
+			}
+			//범위 : 한 칸 반경
+			pair<int, int> eight_dir[8];
+			eight_dir[0] = { heroes[WARRIOR]->get_x(), heroes[WARRIOR]->get_y() - GRID_WH };
+			eight_dir[1] = { heroes[WARRIOR]->get_x(), heroes[WARRIOR]->get_y() + GRID_WH };
+			eight_dir[2] = { heroes[WARRIOR]->get_x() - GRID_WH, heroes[WARRIOR]->get_y() };
+			eight_dir[3] = { heroes[WARRIOR]->get_x() + GRID_WH, heroes[WARRIOR]->get_y() };
+			eight_dir[4] = { heroes[WARRIOR]->get_x() - GRID_WH, heroes[WARRIOR]->get_y() - GRID_WH };
+			eight_dir[5] = { heroes[WARRIOR]->get_x() + GRID_WH, heroes[WARRIOR]->get_y() - GRID_WH };
+			eight_dir[6] = { heroes[WARRIOR]->get_x() - GRID_WH, heroes[WARRIOR]->get_y() + GRID_WH };
+			eight_dir[7] = { heroes[WARRIOR]->get_x() + GRID_WH, heroes[WARRIOR]->get_y() + GRID_WH };
+
+			for (size_t dir_index = 0; dir_index < 8; dir_index++)
+			{
+				int tmp_x = Pos_To_Index(eight_dir[dir_index].first);
+				int tmp_y = Pos_To_Index(eight_dir[dir_index].second);
+
+				int opposing = ((gameplay.turn_action.first - 1) ^ 1) + 1;
+				if (heroes_pos[tmp_y][tmp_x] == opposing)
 				{
-					//스킬 사용
-					heroes[selected_index]->Use_Skill(opposing_heroes[i]);
-
-					//턴 교체
-					if (heroes[selected_index]->Get_Move() == 1) return;
-
-					int tmp_iy;
-					if (gameplay.turn_action.first == 1)
-					{
-						tmp_iy = 1;
-					}
-					else
-					{
-						tmp_iy = BOARD_H - 2;
-					}
-
-					//초기 자리에 영웅 있을 때 삭제
-					auto tmp_hero = Find_Hero_By_Index(3, tmp_iy);
-					if (tmp_hero)
-					{
-						tmp_hero.reset();
-						tmp_hero = make_shared<C_None>(0, 0);
-					}
-
-					//초기 자리로 돌아가기
-					heroes[selected_index]->set_x(Index_To_Pos(3));
-					heroes[selected_index]->set_y(Index_To_Pos(tmp_iy));
-					heroes_pos[tmp_iy][3] = gameplay.turn_action.first;
-
-					heroes_pos[click_index.second][click_index.first] = 0;
-					heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
-					Turn_Change();
-					break;
+					auto& target_hero = Find_Hero_By_Index(opposing, tmp_x, tmp_y);
+					//스킬 사용 : 한 칸 반경 모두에게 적용
+					target_hero->Is_Bound(true);
 				}
 			}
+			Turn_Change();
 		}
 		//다른 영웅 임시 적용
 		else
 		{
 			Turn_Change();
 		}
+
+	
 	}
 }
 
 void C_Board::Turn_Change()
 {
-	if (gameplay.turn_action.first == 1)
-		gameplay.turn_action.first = 2;
-	else
-		gameplay.turn_action.first = 1;
+	gameplay.turn_action.first = ((gameplay.turn_action.first - 1) ^ 1) + 1;
 	gameplay.turn_action.second = gameplay.SELECT;
 	click_index = { -1,-1 };
 }
 
-shared_ptr<C_Hero>& C_Board::Find_Hero_By_Index(int ix, int iy)
+shared_ptr<C_Hero>& C_Board::Find_Hero_By_Index(int who, int ix, int iy)
 {
 	for (size_t i = 0; i < N_HEROES; i++)
 	{
-		if (p1_heroes[i]->get_x() == Index_To_Pos(ix) and p1_heroes[i]->get_y() == Index_To_Pos(iy))
+		if (who == 1 and p1_heroes[i]->get_x() == Index_To_Pos(ix) and p1_heroes[i]->get_y() == Index_To_Pos(iy))
 			return p1_heroes[i];
-		else if (p2_heroes[i]->get_x() == Index_To_Pos(ix) and p2_heroes[i]->get_y() == Index_To_Pos(iy))
+		else if (who == 2 and p2_heroes[i]->get_x() == Index_To_Pos(ix) and p2_heroes[i]->get_y() == Index_To_Pos(iy))
 			return p2_heroes[i];
+		else if (who == 3)
+		{
+			if (p1_heroes[i]->get_x() == Index_To_Pos(ix) and p1_heroes[i]->get_y() == Index_To_Pos(iy))
+				return p1_heroes[i];
+			else if (p2_heroes[i]->get_x() == Index_To_Pos(ix) and p2_heroes[i]->get_y() == Index_To_Pos(iy))
+				return p2_heroes[i];
+		}
 	}
 
-	shared_ptr<C_Hero> tmp = make_shared<C_None>(0, 0);
+	shared_ptr<C_Hero> tmp = nullptr;
 	return tmp;
 }

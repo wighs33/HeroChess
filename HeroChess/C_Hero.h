@@ -16,11 +16,16 @@ public:
     virtual void Set_Move(int move) { move_ = move; }
     virtual int Get_Move() const { return move_; }
 
+    virtual void Is_Bound(bool is_bound) { is_bound_ = is_bound; }
+    virtual bool Is_Bound() const { return is_bound_; }
+
 protected:
     int x_;
     int y_;
     int move_ = 0;
     int count = 0;
+    //¼Ó¹Ú
+    bool is_bound_ = 0;
 };
 
 class C_Magician : public C_Hero

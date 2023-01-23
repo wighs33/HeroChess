@@ -173,7 +173,7 @@ void C_Ghost::Use_Skill(shared_ptr<C_Hero>& hero)
     }
     if (move_ == 1) return;
 
-    //고스트 능력 : 적 진영 끝에 도달 시 한 명 제거
+    //고스트 능력 : 적 진영 끝에 도달 시 한 명 제거하고 초기위치로 귀환
     hero.reset();
     hero = make_shared<C_None>(0, 0);
 }
@@ -203,16 +203,6 @@ void C_Warrior::Render(HDC memdc)
 
 void C_Warrior::Use_Skill(shared_ptr<C_Hero>& hero)
 {
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-    if (move_ == 1) return;
-
-    //마법사 능력 : 위치 체인지
 }
 
 void C_Defender::Render(HDC memdc)
