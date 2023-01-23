@@ -100,9 +100,12 @@ void C_Board::Render_Heroes(HDC memdc)
 			int tmp_y = Pos_To_Index(four_dir[dir_index].second);
 
 			//위치를 간략화한 배열로 시간복잡도 줄이기
-			if (heroes_pos[tmp_y][tmp_x] == 1) continue;
+			if (heroes_pos[tmp_y][tmp_x] == gameplay.turn_action.first) continue;
 
-			Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
+			if (heroes_pos[tmp_y][tmp_x] == 0)
+				Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
+			else
+				Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, RED);
 		}
 	}
 	else if (gameplay.turn_action.second == gameplay.SKILL)
@@ -112,6 +115,26 @@ void C_Board::Render_Heroes(HDC memdc)
 			for (size_t i = 1; i < N_HEROES; i++)
 			{
 				Show_Color(memdc, heroes[i]->get_x(), heroes[i]->get_y(), YELLOW);
+			}
+		}
+		else if(selected_index == 1)
+		{
+			pair<int, int> four_dir[4];
+			four_dir[0] = { select_x, select_y - GRID_WH };
+			four_dir[1] = { select_x, select_y + GRID_WH };
+			four_dir[2] = { select_x - GRID_WH, select_y };
+			four_dir[3] = { select_x + GRID_WH, select_y };
+
+			for (size_t dir_index = 0; dir_index < 4; dir_index++)
+			{
+				int tmp_x = Pos_To_Index(four_dir[dir_index].first);
+				int tmp_y = Pos_To_Index(four_dir[dir_index].second);
+
+				//위치를 간략화한 배열로 시간복잡도 줄이기
+				if (heroes_pos[tmp_y][tmp_x] == gameplay.turn_action.first) continue;
+
+				if (heroes_pos[tmp_y][tmp_x] != 0)
+					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, YELLOW);
 			}
 		}
 	}
@@ -258,6 +281,7 @@ void C_Board::Act_Hero()
 							break;
 						}
 					}
+					//else if를 쓸 때 괄호를 통해서 어느 if문과 대응하는지 명확하게 구분짓자
 					else 	if (gameplay.turn_action.first == 2)
 					{
 						if (p1_heroes[i]->get_x() == Index_To_Pos(click_index.first) and
@@ -279,24 +303,42 @@ void C_Board::Act_Hero()
 			heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
 
 			heroes[selected_index]->Set_Move(0);
+
+			select_x = Index_To_Pos(click_index.first);
+			select_y = Index_To_Pos(click_index.second);
+
 			click_index = { -1,-1 };
 		}
 	}
 	//능력 사용 페이즈
 	else 	if (gameplay.turn_action.second == gameplay.SKILL)
 	{
-		if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first)
+		//상대 영웅들 저장
+		auto opposing_heroes = heroes;
+		if (gameplay.turn_action.first == 1)
+			opposing_heroes = p2_heroes;
+		else
+			opposing_heroes = p1_heroes;
+
+		//마법사
+		//if (selected_index == 0)
+		{
+			//적용 대상 : 아군
+			if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first) return;
+
+			//클릭한 영웅 찾기
 			for (size_t i = 0; i < N_HEROES; i++)
 			{
 				pair<int, int> tmp = { Pos_To_Index(heroes[i]->get_x()), Pos_To_Index(heroes[i]->get_y()) };
 				if (click_index == tmp)
 				{
-					heroes[selected_index]->Set_Move(1);
+					//스킬 사용
 					heroes[selected_index]->Use_Skill(*heroes[i]);
 
+					//턴 교체
 					if (heroes[selected_index]->Get_Move() == 0)
 					{
-						if(gameplay.turn_action.first == 1)
+						if (gameplay.turn_action.first == 1)
 							gameplay.turn_action.first = 2;
 						else
 							gameplay.turn_action.first = 1;
@@ -305,5 +347,42 @@ void C_Board::Act_Hero()
 					break;
 				}
 			}
+		}
+		////사신
+		//else if (selected_index == 1)
+		//{
+		//	//적용 대상 : 상대
+		//	if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
+		//		heroes_pos[click_index.second][click_index.first] == 0) return;
+
+		//	//범위 : 한 칸 반경
+		//	if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
+		//		click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
+		//		click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
+		//		click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y))))
+		//		return;
+		//	
+		//	//클릭한 영웅 찾기
+		//	for (size_t i = 0; i < N_HEROES; i++)
+		//	{
+		//		pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
+		//		if (click_index == tmp)
+		//		{
+		//			//스킬 사용
+		//			heroes[selected_index]->Use_Skill(*opposing_heroes[i]);
+
+		//			//턴 교체
+		//			if (heroes[selected_index]->Get_Move() == 0)
+		//			{
+		//				if (gameplay.turn_action.first == 1)
+		//					gameplay.turn_action.first = 2;
+		//				else
+		//					gameplay.turn_action.first = 1;
+		//				gameplay.turn_action.second = gameplay.SELECT;
+		//			}
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 }

@@ -259,9 +259,7 @@ class C_None : public C_Hero
 public:
     C_None(int x, int y)
         : C_Hero(x, y)
-    {
-
-    }
+    {}
     virtual ~C_None() override {}
     virtual void Render(HDC memdc) override {}
     virtual void Move_Per_Frame(int dest_x, int dest_y) override{}

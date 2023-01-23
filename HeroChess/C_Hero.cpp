@@ -52,6 +52,8 @@ void C_Magician::Render(HDC memdc)
 
 void C_Magician::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
     if (count == N_IMAGES - 1)
     {
         move_ = 0;
@@ -95,6 +97,16 @@ void C_Reaper::Render(HDC memdc)
 
 void C_Reaper::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+    //사신 능력 : 주위 영웅 한명 제거
 }
 
 void C_Ninja::Render(HDC memdc)
@@ -122,6 +134,16 @@ void C_Ninja::Render(HDC memdc)
 
 void C_Ninja::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+    //마법사 능력 : 위치 체인지
 }
 
 void C_Ghost::Render(HDC memdc)
@@ -149,6 +171,16 @@ void C_Ghost::Render(HDC memdc)
 
 void C_Ghost::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+    //마법사 능력 : 위치 체인지
 }
 
 void C_Warrior::Render(HDC memdc)
@@ -176,6 +208,16 @@ void C_Warrior::Render(HDC memdc)
 
 void C_Warrior::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+    //마법사 능력 : 위치 체인지
 }
 
 void C_Defender::Render(HDC memdc)
@@ -203,6 +245,16 @@ void C_Defender::Render(HDC memdc)
 
 void C_Defender::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+    //마법사 능력 : 위치 체인지
 }
 
 void C_Knight::Render(HDC memdc)
@@ -230,4 +282,14 @@ void C_Knight::Render(HDC memdc)
 
 void C_Knight::Use_Skill(C_Hero& hero)
 {
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+    if (move_ == 1) return;
+
+    //마법사 능력 : 위치 체인지
 }
