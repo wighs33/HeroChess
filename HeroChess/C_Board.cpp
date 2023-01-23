@@ -108,16 +108,22 @@ void C_Board::Render_Heroes(HDC memdc)
 
 		for (size_t dir_index = 0; dir_index < 4; dir_index++)
 		{
-			int tmp_x = Pos_To_Index(four_dir[dir_index].first);
-			int tmp_y = Pos_To_Index(four_dir[dir_index].second);
+			int tmp_ix = Pos_To_Index(four_dir[dir_index].first);
+			int tmp_iy = Pos_To_Index(four_dir[dir_index].second);
 
 			//위치를 간략화한 배열로 시간복잡도 줄이기
-			if (heroes_pos[tmp_y][tmp_x] == gameplay.turn_action.first) continue;
+			if (heroes_pos[tmp_iy][tmp_ix] == gameplay.turn_action.first) continue;
 
-			if (heroes_pos[tmp_y][tmp_x] == 0)
+			if (heroes_pos[tmp_iy][tmp_ix] == 0)
 				Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
 			else
-				Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, RED);
+			{
+				//디펜더는 공격 표시 없애기
+				if (selected_index == DEFENDER) continue;
+				//공격 가능한 적이 디펜더가 아닐 시 빨간 색 표시
+				if (four_dir[dir_index] != make_pair<int, int>(opposing_heroes[DEFENDER]->get_x(), opposing_heroes[DEFENDER]->get_y()))
+					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, RED);
+			}
 		}
 	}
 	else if (gameplay.turn_action.second == gameplay.SKILL)
@@ -353,6 +359,12 @@ void C_Board::Act_Hero()
 			click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
 			click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y))))
 			return;
+
+		//디펜더를 대상으로 공격 불가
+		if (click_index == make_pair<int, int>(Pos_To_Index(opposing_heroes[DEFENDER]->get_x()), Pos_To_Index(opposing_heroes[DEFENDER]->get_y()))) return;
+
+		//디펜더는 상대 공격 불가
+		if (selected_index == DEFENDER and heroes_pos[click_index.second][click_index.first] != 0) return;
 
 		//이동 중
 		heroes[selected_index]->Move_Per_Frame(Index_To_Pos(click_index.first), Index_To_Pos(click_index.second));
