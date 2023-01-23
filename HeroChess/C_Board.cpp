@@ -58,14 +58,19 @@ void C_Board::Render(HDC memdc)
 
 void C_Board::Render_Heroes(HDC memdc)
 {
+	auto heroes = p1_heroes;
+	if(gameplay.turn_action.first == 2)
+		heroes = p2_heroes;
+
 	bool is_moving = false;
 	for (size_t i = 0; i < N_HEROES; i++)
 	{
+
 		//영웅 들 그리기
 		p1_heroes[i]->Render(memdc);
 		p2_heroes[i]->Render(memdc);
 
-		if (p1_heroes[i]->Get_Move() == 1) is_moving = true;
+		if (heroes[i]->Get_Move() == 1) is_moving = true;
 	}
 
 	//한 명이라도 이동 중일 때 색 표시 건너뛰기
@@ -76,12 +81,12 @@ void C_Board::Render_Heroes(HDC memdc)
 	}
 
 	//색 표시
-	if (gameplay.turn_action == make_pair<int, int>(1, gameplay.SELECT))
+	if (gameplay.turn_action.second == gameplay.SELECT)
 	{
 		for (size_t i = 0; i < N_HEROES; i++)
-			Show_Color(memdc, p1_heroes[i]->get_x(), p1_heroes[i]->get_y(), BLUE);
+			Show_Color(memdc, heroes[i]->get_x(), heroes[i]->get_y(), BLUE);
 	}
-	else if (gameplay.turn_action == make_pair<int, int>(1, gameplay.MOVE))
+	else if (gameplay.turn_action.second == gameplay.MOVE)
 	{
 		pair<int, int> four_dir[4];
 		four_dir[0] = { select_x, select_y - GRID_WH };
@@ -100,51 +105,16 @@ void C_Board::Render_Heroes(HDC memdc)
 			Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
 		}
 	}
-	else 	if (gameplay.turn_action == make_pair<int, int>(1, gameplay.SKILL))
+	else if (gameplay.turn_action.second == gameplay.SKILL)
 	{
 		if (selected_index == 0)
 		{
 			for (size_t i = 1; i < N_HEROES; i++)
 			{
-				Show_Color(memdc, p1_heroes[i]->get_x(), p1_heroes[i]->get_y(), YELLOW);
+				Show_Color(memdc, heroes[i]->get_x(), heroes[i]->get_y(), YELLOW);
 			}
 		}
 	}
-	else 	if (gameplay.turn_action == make_pair<int, int>(2, gameplay.SELECT))
-	{
-		for (size_t i = 0; i < N_HEROES; i++)
-			Show_Color(memdc, p2_heroes[i]->get_x(), p2_heroes[i]->get_y(), BLUE);
-	}
-	else if (gameplay.turn_action == make_pair<int, int>(2, gameplay.MOVE))
-	{
-		pair<int, int> four_dir[4];
-		four_dir[0] = { select_x, select_y - GRID_WH };
-		four_dir[1] = { select_x, select_y + GRID_WH };
-		four_dir[2] = { select_x - GRID_WH, select_y };
-		four_dir[3] = { select_x + GRID_WH, select_y };
-
-		for (size_t dir_index = 0; dir_index < 4; dir_index++)
-		{
-			int tmp_x = Pos_To_Index(four_dir[dir_index].first);
-			int tmp_y = Pos_To_Index(four_dir[dir_index].second);
-
-			//위치를 간략화한 배열로 시간복잡도 줄이기
-			if (heroes_pos[tmp_y][tmp_x] == 1) continue;
-
-			Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
-		}
-	}
-	else 	if (gameplay.turn_action == make_pair<int, int>(2, gameplay.SKILL))
-	{
-		if (selected_index == 0)
-		{
-			for (size_t i = 1; i < N_HEROES; i++)
-			{
-				Show_Color(memdc, p2_heroes[i]->get_x(), p2_heroes[i]->get_y(), YELLOW);
-			}
-		}
-	}
-
 }
 
 void C_Board::Generate_Grid()
@@ -179,6 +149,8 @@ void C_Board::Generate_Grid()
 
 void C_Board::Show_Color(HDC memdc, int rect_x, int rect_y, int color)
 {
+	if (rect_x == 0 and rect_y == 0) return;
+
 	if (Pos_To_Index(rect_x) < 0 || Pos_To_Index(rect_x) >= BOARD_W
 		|| Pos_To_Index(rect_y) < 0 || Pos_To_Index(rect_y) >= BOARD_H)
 		return;
@@ -256,22 +228,53 @@ void C_Board::Act_Hero()
 		//자신의 영웅 클릭시 리턴
 		if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first) return;
 
-		//영웅 기준으로 상하좌우 중 하나 클릭했을 때
-		if (click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1)||
-			click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1)||
-			click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y))||
-			click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)))
-		{
-			//이동 중
-			heroes[selected_index]->Set_Move(1);
-			heroes[selected_index]->Move_Per_Frame(Index_To_Pos(click_index.first), Index_To_Pos(click_index.second));
-		}
+		//영웅 기준으로 상하좌우 중 하나 클릭한 게 아니면 리턴
+		if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
+			click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
+			click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
+			click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y))))
+			return;
+
+		//이동 중
+		heroes[selected_index]->Set_Move(1);
+		heroes[selected_index]->Move_Per_Frame(Index_To_Pos(click_index.first), Index_To_Pos(click_index.second));
 
 		//이동 완료 했을 때
 		if (heroes[selected_index]->Get_Move() == 2)
 		{
+			//타 플레이어 영웅 클릭했다면 해당 영웅 삭제
+			if (heroes_pos[click_index.second][click_index.first] != 0)
+			{
+				//위치 정보로 상대 영웅 찾은 후 삭제
+				for (size_t i = 0; i < N_HEROES; i++)
+				{
+					if (gameplay.turn_action.first == 1)
+					{
+						if (p2_heroes[i]->get_x() == Index_To_Pos(click_index.first) and
+							p2_heroes[i]->get_y() == Index_To_Pos(click_index.second))
+						{
+							p2_heroes[i].reset();
+							p2_heroes[i] = make_shared<C_None>(0, 0);
+							break;
+						}
+					}
+					else 	if (gameplay.turn_action.first == 2)
+					{
+						if (p1_heroes[i]->get_x() == Index_To_Pos(click_index.first) and
+							p1_heroes[i]->get_y() == Index_To_Pos(click_index.second))
+						{
+							p1_heroes[i].reset();
+							p1_heroes[i] = make_shared<C_None>(0, 0);
+							break;
+						}
+					}
+				}
+			}
+
+
 			++gameplay.turn_action.second;
 
+			//보드 상 위치 정보 갱신
 			heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
 			heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
 

@@ -10,8 +10,6 @@ void C_Hero::Move_Per_Frame(int dest_x, int dest_y)
     int dist_x = dest_x - x_;
     int dist_y = dest_y - y_;
 
-    cout << x_ << ' ' << y_ << endl;
-
     if (dist_x >= -5 and dist_x <= 5)
         x_ = dest_x;
     else
