@@ -19,6 +19,11 @@ public:
     virtual void Is_Bound(bool is_bound) { is_bound_ = is_bound; }
     virtual bool Is_Bound() const { return is_bound_; }
 
+    virtual int Before_x() const { return before_x_; }
+    virtual int Before_y() const { return before_y_; }
+    virtual void Before_x(int x) { before_x_ = x; }
+    virtual void Before_y(int y) { before_y_ = y; }
+
 protected:
     int x_;
     int y_;
@@ -26,6 +31,9 @@ protected:
     int count = 0;
     //¼Ó¹Ú
     bool is_bound_ = 0;
+
+    int before_x_;
+    int before_y_;
 };
 
 class C_Magician : public C_Hero
