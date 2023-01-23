@@ -204,7 +204,7 @@ void C_Warrior::Render(HDC memdc)
 
 void C_Warrior::Use_Skill(shared_ptr<C_Hero>& hero)
 {
-    //보드 메서드에서 해결
+    //보드 클래스에서 해결
 }
 
 void C_Defender::Render(HDC memdc)
@@ -232,16 +232,7 @@ void C_Defender::Render(HDC memdc)
 
 void C_Defender::Use_Skill(shared_ptr<C_Hero>& hero)
 {
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-    if (move_ == 1) return;
-
-    //마법사 능력 : 위치 체인지
+    //Move_Per_Frame 메서드로 해결
 }
 
 void C_Knight::Render(HDC memdc)

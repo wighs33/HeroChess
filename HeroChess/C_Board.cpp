@@ -194,15 +194,27 @@ void C_Board::Render_Heroes(HDC memdc)
 		}
 		else if (selected_index == DEFENDER)
 		{
-			for (size_t i = 0; i < BOARD_W; i++)
+			for (int i = Pos_To_Index(select_x) + 1; i < BOARD_W; ++i)
 			{
-				if (i == select_x) continue;
+				if (heroes_pos[Pos_To_Index(select_y)][i] != 0) break;
 				Show_Color(memdc, Index_To_Pos(i), select_y, YELLOW);
 			}
 
-			for (size_t i = 0; i < BOARD_H; i++)
+			for (int i = Pos_To_Index(select_x) - 1; i >= 0; --i)
 			{
-				if (i == select_y) continue;
+				if (heroes_pos[Pos_To_Index(select_y)][i] != 0) break;
+				Show_Color(memdc, Index_To_Pos(i), select_y, YELLOW);
+			}
+
+			for (int i = Pos_To_Index(select_y) + 1; i < BOARD_H; ++i)
+			{
+				if (heroes_pos[i][Pos_To_Index(select_x)] != 0) break;
+				Show_Color(memdc, select_x, Index_To_Pos(i), YELLOW);
+			}
+
+			for (int i = Pos_To_Index(select_y) - 1; i >= 0; --i)
+			{
+				if (heroes_pos[i][Pos_To_Index(select_x)] != 0) break;
 				Show_Color(memdc, select_x, Index_To_Pos(i), YELLOW);
 			}
 		}
@@ -554,45 +566,84 @@ void C_Board::Act_Hero()
 		//디펜더
 		else if (selected_index == DEFENDER)
 		{
-			for (size_t i = 0; i < BOARD_W; i++)
+			for (int i = Pos_To_Index(select_x) + 1; i < BOARD_W; ++i)
 			{
-				if (i == select_x) continue;
+				//영웅이 가로막으면 이동 가능 범위 좁혀짐
+				if (heroes_pos[Pos_To_Index(select_y)][i] != 0) break;
 
-				if (click_index == make_pair<int, int>((int)i, Pos_To_Index(select_y)))
+				if (click_index != make_pair<int, int>((int)i, Pos_To_Index(select_y))) continue;
+
+				//이동 중
+				heroes[DEFENDER]->Move_Per_Frame(Index_To_Pos((int)i), select_y);
+
+				//이동 완료 했을 때
+				if (heroes[DEFENDER]->Get_Move() == 2)
 				{
-					//이동 중
-					heroes[selected_index]->Move_Per_Frame(Index_To_Pos((int)i), select_y);
-
-					//이동 완료 했을 때
-					if (heroes[selected_index]->Get_Move() == 2)
-					{
-						heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
-						heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
-						heroes[selected_index]->Set_Move(0);
-						Turn_Change();
-						return;
-					}
+					heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
+					heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+					heroes[DEFENDER]->Set_Move(0);
+					Turn_Change();
+					return;
 				}
 			}
 
-			for (size_t i = 0; i < BOARD_H; i++)
+			for (int i = Pos_To_Index(select_x) - 1; i >= 0; --i)
 			{
-				if (i == select_y) continue;
+				if (heroes_pos[Pos_To_Index(select_y)][i] != 0) break;
 
-				if (click_index == make_pair<int, int>(Pos_To_Index(select_x), (int)i ))
+				if (click_index != make_pair<int, int>((int)i, Pos_To_Index(select_y))) continue;
+
+				//이동 중
+				heroes[DEFENDER]->Move_Per_Frame(Index_To_Pos((int)i), select_y);
+
+				//이동 완료 했을 때
+				if (heroes[DEFENDER]->Get_Move() == 2)
 				{
-					//이동 중
-					heroes[selected_index]->Move_Per_Frame(select_x, Index_To_Pos((int)i));
+					heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
+					heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+					heroes[DEFENDER]->Set_Move(0);
+					Turn_Change();
+					return;
+				}
+			}
 
-					//이동 완료 했을 때
-					if (heroes[selected_index]->Get_Move() == 2)
-					{
-						heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
-						heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
-						heroes[selected_index]->Set_Move(0);
-						Turn_Change();
-						return;
-					}
+			for (int i = Pos_To_Index(select_y) + 1; i < BOARD_H; ++i)
+			{
+				if (heroes_pos[i][Pos_To_Index(select_x)] != 0) break;
+
+				if (click_index != make_pair<int, int>(Pos_To_Index(select_x), (int)i)) continue;
+
+				//이동 중
+				heroes[DEFENDER]->Move_Per_Frame(select_x, Index_To_Pos((int)i));
+
+				//이동 완료 했을 때
+				if (heroes[DEFENDER]->Get_Move() == 2)
+				{
+					heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
+					heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+					heroes[DEFENDER]->Set_Move(0);
+					Turn_Change();
+					return;
+				}
+			}
+
+			for (int i = Pos_To_Index(select_y) - 1; i >= 0; --i)
+			{
+				if (heroes_pos[i][Pos_To_Index(select_x)] != 0) break;
+
+				if (click_index != make_pair<int, int>(Pos_To_Index(select_x), (int)i)) continue;
+
+				//이동 중
+				heroes[DEFENDER]->Move_Per_Frame(select_x, Index_To_Pos((int)i));
+
+				//이동 완료 했을 때
+				if (heroes[DEFENDER]->Get_Move() == 2)
+				{
+					heroes_pos[click_index.second][click_index.first] = gameplay.turn_action.first;
+					heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+					heroes[DEFENDER]->Set_Move(0);
+					Turn_Change();
+					return;
 				}
 			}
 		}
