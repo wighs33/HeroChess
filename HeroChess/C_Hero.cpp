@@ -203,6 +203,7 @@ void C_Warrior::Render(HDC memdc)
 
 void C_Warrior::Use_Skill(shared_ptr<C_Hero>& hero)
 {
+    //보드 메서드에서 해결
 }
 
 void C_Defender::Render(HDC memdc)

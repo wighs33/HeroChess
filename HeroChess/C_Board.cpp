@@ -192,6 +192,20 @@ void C_Board::Render_Heroes(HDC memdc)
 		{
 			//자동
 		}
+		else if (selected_index == DEFENDER)
+		{
+			for (size_t i = 0; i < BOARD_W; i++)
+			{
+				if (i == select_x) continue;
+				Show_Color(memdc, Index_To_Pos(i), select_y, YELLOW);
+			}
+
+			for (size_t i = 0; i < BOARD_H; i++)
+			{
+				if (i == select_y) continue;
+				Show_Color(memdc, select_x, Index_To_Pos(i), YELLOW);
+			}
+		}
 	}
 }
 
@@ -538,6 +552,24 @@ void C_Board::Act_Hero()
 			}
 			Turn_Change();
 		}
+		//디펜더
+		//else if (selected_index == DEFENDER)
+		//{
+		//for (size_t i = 0; i < BOARD_W; i++)
+		//{
+		//	if (i == select_x) continue;
+
+		//	//if(click_index = make_pair<int, int>())
+
+		//	//Show_Color(memdc, Index_To_Pos(i), select_y, YELLOW);
+		//}
+
+		//for (size_t i = 0; i < BOARD_H; i++)
+		//{
+		//	if (i == select_y) continue;
+		//	//Show_Color(memdc, select_x, Index_To_Pos(i), YELLOW);
+		//}
+		//}
 		//다른 영웅 임시 적용
 		else
 		{
