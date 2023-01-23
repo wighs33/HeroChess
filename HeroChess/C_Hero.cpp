@@ -4,6 +4,7 @@
 
 void C_Hero::Move_Per_Frame(int dest_x, int dest_y)
 {
+    move_ = 1;
     if (x_ == dest_x and y_ == dest_y) move_ = 2;
     if (move_ == 2) return;
 
