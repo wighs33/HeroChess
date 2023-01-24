@@ -442,6 +442,11 @@ void C_Board::Act_Hero()
 
 			heroes[selected_index]->Set_Move(0);
 
+			//이전 위치 값 저장
+			heroes[selected_index]->Before_x(select_x);
+			heroes[selected_index]->Before_y(select_y);
+
+			//현재 위치 값 갱신
 			select_x = Index_To_Pos(click_index.first);
 			select_y = Index_To_Pos(click_index.second);
 
@@ -690,10 +695,64 @@ void C_Board::Act_Hero()
 				}
 			}
 		}
-		//다른 영웅 임시 적용
-		else
+		//기사
+		else if (selected_index == KNIGHT)
 		{
-			Turn_Change();
+			//적용 대상 : 아군
+			if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first)
+			{
+				Turn_Change();
+				return;
+			}
+
+			//범위 : 한 칸 반경
+			if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) + 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) - 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) + 1) ||
+				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) - 1)
+				))
+			{
+				Turn_Change();
+				return;
+			}
+
+			static int save = 0;
+			static int dest_x = 0;
+			static int dest_y = 0;
+
+			//클릭한 영웅 찾기
+			if (heroes[save]->Get_Move() == 0)
+				for (size_t i = 0; i < N_HEROES; i++)
+				{
+					pair<int, int> tmp = { Pos_To_Index(heroes[i]->get_x()), Pos_To_Index(heroes[i]->get_y()) };
+					if (click_index == tmp)
+					{
+						dest_x = heroes[KNIGHT]->get_x() - heroes[KNIGHT]->Before_x() + heroes[i]->get_x();
+						dest_y = heroes[KNIGHT]->get_y() - heroes[KNIGHT]->Before_y() + heroes[i]->get_y();
+						save = i;
+						if (Find_Hero_By_Index(gameplay.turn_action.first, Pos_To_Index(dest_x), Pos_To_Index(dest_y))) return;
+						break;
+					}
+				}
+
+			//이동 중
+			heroes[save]->Move_Per_Frame(dest_x, dest_y);
+
+			//이동 완료 했을 때
+			if (heroes[save]->Get_Move() == 2)
+			{
+				//클릭 위치 : 능력 적용 대상
+				heroes_pos[click_index.second][click_index.first] = 0;
+				//능력 적용 후 위치
+				heroes_pos[Pos_To_Index(dest_y)][Pos_To_Index(dest_x)] = gameplay.turn_action.first;
+				heroes[save]->Set_Move(0);
+				Turn_Change();
+				return;
+			}
 		}
 
 	
