@@ -167,15 +167,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         castle.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(BOARD_H - 1)- GRID_WH/2, GRID_WH, GRID_WH + GRID_WH / 2);
 
         //성이 불타는 이미지
-        if(board.Lifes().first == 1)
+        if(board.Lifes().first <= 1)
             fire.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(0) - GRID_WH / 2, GRID_WH, GRID_WH + GRID_WH / 2);
-        if (board.Lifes().second == 1)
+        if (board.Lifes().second <= 1)
             fire.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(BOARD_H - 1) - GRID_WH / 2, GRID_WH, GRID_WH + GRID_WH / 2);
-
-        if (board.Lifes().first == 0 || board.Lifes().second == 0)
-        {
-            //차일드 윈도우 띄우기
-        }
 
         //비트맵 지우기
         SelectObject(memdc, oldBit);
@@ -201,6 +196,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //메인 도화지 삭제
         EndPaint(hWnd, &ps);
+
+        if (board.Lifes().first == 0 || board.Lifes().second == 0)
+        {
+            KillTimer(hWnd, 1);
+            static TCHAR lpOut[100];
+            wsprintf(lpOut, _T("Player %d 승리!"), (board.Lifes().first == 0 ? 2 : 1));
+
+            //차일드 윈도우 띄우기
+            MessageBox(hWnd, lpOut, _T("승자"), MB_OKCANCEL);
+            break;
+        }
         break;
     case WM_LBUTTONDOWN:
         board.Check_Click(LOWORD(lParam), HIWORD(lParam));
