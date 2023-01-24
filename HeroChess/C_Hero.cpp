@@ -137,7 +137,13 @@ void C_Ninja::Render(HDC memdc)
 
 void C_Ninja::Use_Skill(shared_ptr<C_Hero>& hero)
 {
-
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
 }
 
 void C_Ghost::Render(HDC memdc)
