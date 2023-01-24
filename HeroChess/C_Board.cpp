@@ -209,7 +209,34 @@ void C_Board::Render_Heroes(HDC memdc)
 		}
 		else if (selected_index == NINJA)
 		{
-			
+			pair<int, int> eight_dir[8];
+			eight_dir[0] = { select_x, select_y - GRID_WH };
+			eight_dir[1] = { select_x, select_y + GRID_WH };
+			eight_dir[2] = { select_x - GRID_WH, select_y };
+			eight_dir[3] = { select_x + GRID_WH, select_y };
+			eight_dir[4] = { select_x - GRID_WH, select_y - GRID_WH };
+			eight_dir[5] = { select_x + GRID_WH, select_y - GRID_WH };
+			eight_dir[6] = { select_x - GRID_WH, select_y + GRID_WH };
+			eight_dir[7] = { select_x + GRID_WH, select_y + GRID_WH };
+
+			int tmp_cnt = 0;
+			for (size_t dir_index = 0; dir_index < 8; dir_index++)
+			{
+				int tmp_x = Pos_To_Index(eight_dir[dir_index].first);
+				int tmp_y = Pos_To_Index(eight_dir[dir_index].second);
+
+				if (heroes_pos[tmp_y][tmp_x] != 0)
+				{
+					Show_Color(memdc, eight_dir[dir_index].first, eight_dir[dir_index].second, YELLOW);
+					++tmp_cnt;
+				}
+			}
+
+			// 적용 대상 없으면 자동으로 턴 교체
+			if (tmp_cnt == 0)
+			{
+				Turn_Change();
+			}
 		}
 		else if (selected_index == GHOST)
 		{
