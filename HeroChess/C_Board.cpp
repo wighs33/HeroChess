@@ -115,7 +115,15 @@ void C_Board::Render_Heroes(HDC memdc)
 			if (heroes_pos[tmp_iy][tmp_ix] == gameplay.turn_action.first) continue;
 
 			if (heroes_pos[tmp_iy][tmp_ix] == 0)
-				Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
+			{
+				//적 성에 마주치면 빨간색 표시, 아군 성은 표시 안함
+				if(tmp_ix == 3 and tmp_iy == 0 and gameplay.turn_action.first == 2)
+					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, RED);
+				else if (tmp_ix == 3 and tmp_iy == BOARD_H - 1 and gameplay.turn_action.first == 1)
+					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, RED);
+				else if(!((tmp_ix == 3 and tmp_iy == 0) or (tmp_ix == 3 and tmp_iy == BOARD_H - 1)))
+					Show_Color(memdc, four_dir[dir_index].first, four_dir[dir_index].second, GREEN);
+			}
 			else
 			{
 				//디펜더는 공격 표시 없애기
@@ -396,6 +404,33 @@ void C_Board::Act_Hero()
 
 		//디펜더는 상대 공격 불가
 		if (selected_index == DEFENDER and heroes_pos[click_index.second][click_index.first] != 0) return;
+
+		//아군 성 클릭 비활성화, 상대 성 클릭 시 상대 라이프 감소 후 다음 페이즈
+		if (gameplay.turn_action.first == 1)
+		{
+			if (click_index == make_pair<int, int>(3, 0)) return;
+			if (click_index == make_pair<int, int>(3, BOARD_H - 1))
+			{
+				--lifes.second;
+				
+				++gameplay.turn_action.second;
+				click_index = { -1,-1 };
+				return;
+			}
+		}
+		else
+		{
+			if (click_index == make_pair<int, int>(3, BOARD_H - 1)) return;
+			if (click_index == make_pair<int, int>(3, 0))
+			{
+				--lifes.first;
+
+				++gameplay.turn_action.second;
+				click_index = { -1,-1 };
+				return;
+			}
+		}
+
 
 		//이동 중
 		heroes[selected_index]->Move_Per_Frame(Index_To_Pos(click_index.first), Index_To_Pos(click_index.second));
@@ -693,6 +728,12 @@ void C_Board::Act_Hero()
 					Turn_Change();
 					return;
 				}
+			}
+			//노란 표시가 아닌 칸 클릭 시 턴 교체
+			if (heroes[DEFENDER]->Get_Move() == 0)
+			{
+				Turn_Change();
+				return;
 			}
 		}
 		//기사

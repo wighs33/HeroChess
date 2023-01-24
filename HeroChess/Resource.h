@@ -62,6 +62,8 @@
 #define IDB_BITMAP47                    177
 #define IDB_BITMAP48                    178
 #define IDB_BITMAP49                    179
+#define IDB_BITMAP50                    180
+#define IDB_BITMAP51                    181
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -75,7 +77,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        180
+#define _APS_NEXT_RESOURCE_VALUE        182
 #define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110

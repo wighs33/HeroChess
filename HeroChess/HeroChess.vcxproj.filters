@@ -225,5 +225,11 @@
     <Image Include="..\resource\knight4.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="..\resource\castle.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\resource\fire.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -169,9 +169,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\resource\bitmap1.bmp" />
+    <Image Include="..\resource\castle.bmp" />
     <Image Include="..\resource\defender1.bmp" />
     <Image Include="..\resource\defender2.bmp" />
     <Image Include="..\resource\defender3.bmp" />
+    <Image Include="..\resource\fire.bmp" />
     <Image Include="..\resource\Ghost1.bmp" />
     <Image Include="..\resource\Ghost2.bmp" />
     <Image Include="..\resource\Ghost3.bmp" />

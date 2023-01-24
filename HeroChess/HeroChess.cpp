@@ -131,7 +131,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 
     //static C_Magician magician(true, 100, 300);
-    static C_Image background(IDB_BITMAP1);
+    static C_Image background(IDB_BITMAP1, 320, 320);
+    static C_Image castle(IDB_BITMAP50, 674, 867);
+    static C_Image fire(IDB_BITMAP51, 260, 260);
     static C_InputHandler input;
     static C_Board board;
 
@@ -157,10 +159,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         memdc = CreateCompatibleDC(hdc);
         oldBit = (HBITMAP)SelectObject(memdc, hBit);
 
-        background.Render(memdc);
+        background.Render(memdc, 0, 0, WIN_W, WIN_H);
         board.Render(memdc);
         board.Act_Hero();
         board.Render_Heroes(memdc);
+        castle.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(0)- GRID_WH/2, GRID_WH, GRID_WH + GRID_WH / 2);
+        castle.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(BOARD_H - 1)- GRID_WH/2, GRID_WH, GRID_WH + GRID_WH / 2);
 
         //비트맵 지우기
         SelectObject(memdc, oldBit);

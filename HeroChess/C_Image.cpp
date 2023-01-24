@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "C_Image.h"
 
-void C_Image::Render(HDC memdc)
+void C_Image::Render(HDC memdc, int sx, int sy, int ex, int ey)
 {
     //더블 버퍼링
 //메시지가 발생할 때마다 DC가 초기화하므로
@@ -10,7 +10,7 @@ void C_Image::Render(HDC memdc)
     HDC image_dc = CreateCompatibleDC(memdc);
     HBITMAP oldBit = (HBITMAP)SelectObject(image_dc, BackgroundBit);
     //정확한 이미지 크기가 들어가야 제대로 나온다.
-    StretchBlt(memdc, 0, 0, WIN_W, WIN_H, image_dc, 0, 0, IMAGE_W, IMAGE_H, SRCCOPY);
+    TransparentBlt(memdc, sx, sy, ex, ey, image_dc, 0, 0, image_w, image_h, WHITE);
 
     //DC 파괴하기
     SelectObject(image_dc, oldBit);

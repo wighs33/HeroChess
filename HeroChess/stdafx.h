@@ -32,6 +32,8 @@ static const int GRAY = RGB(100, 100, 100);
 static const int WIN_W = 560;
 static const int WIN_H = 780;
 static const int GRID_WH = 60;
+static const int BOARD_W = 7;
+static const int BOARD_H = 10;
 
 // 전역 변수:
 static HINSTANCE hInst;                                // 현재 인스턴스입니다.

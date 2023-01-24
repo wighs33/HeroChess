@@ -1,5 +1,6 @@
 #pragma once
 #include "C_Hero.h"
+#include "C_Image.h"
 
 class GamePlay
 {
@@ -84,9 +85,6 @@ private:
 	C_Grid ground_tile;
 	C_Grid river_tile;
 
-	static const int BOARD_W = 7;
-	static const int BOARD_H = 10;
-
 	C_Grid* tiles_[BOARD_H][BOARD_W];
 
 	shared_ptr<C_Hero> p1_heroes[BOARD_W];
@@ -106,4 +104,6 @@ private:
 
 	//영웅 추가 시 생성자에서 할당
 	static const int N_HEROES = 7;
+
+	pair<int, int> lifes = { 2,2 };
 };
