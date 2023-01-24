@@ -82,8 +82,13 @@ public:
 
 	pair<int, int> Lifes() const { return lifes; }
 
-	void Magician_Skill_Range(HDC memdc, shared_ptr<C_Hero>* heroes, int except);
+	void Magician_Skill_Range(HDC memdc, int except);
 	void Reaper_And_Ninja_Skill_Range(HDC memdc);
+	void Ghost_Skill_Range(HDC memdc);
+
+	void Magician_Skill();
+	void Reaper_Skill();
+	void Ghost_Skill();
 
 private:
 	C_Grid grass_tile;
@@ -115,4 +120,7 @@ private:
 	shared_ptr<C_Hero> null_hero = nullptr;
 	int skill_copy_index = -1;
 	bool is_select_copy = false;
+
+	shared_ptr<C_Hero>* heroes;
+	shared_ptr<C_Hero>* opposing_heroes;
 };

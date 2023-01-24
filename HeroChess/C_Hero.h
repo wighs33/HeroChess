@@ -4,7 +4,7 @@
 class C_Hero
 {
 public:
-    C_Hero(int x, int y) : x_(x), y_(y) {};
+    C_Hero(int x, int y, int n) : x_(x), y_(y), N_IMAGES(n){};
     virtual ~C_Hero() {}
     virtual void Render(HDC memdc) = 0;
     virtual void Move_Per_Frame(int destX, int destY);
@@ -24,6 +24,8 @@ public:
     virtual void Before_x(int x) { before_x_ = x; }
     virtual void Before_y(int y) { before_y_ = y; }
 
+    virtual void Animation();
+
 protected:
     int x_;
     int y_;
@@ -32,15 +34,17 @@ protected:
     //¼Ó¹Ú
     bool is_bound_ = 0;
 
-    int before_x_;
-    int before_y_;
+    int before_x_ = 0;
+    int before_y_ = 0;
+
+    int N_IMAGES = 0;
 };
 
 class C_Magician : public C_Hero
 {
 public:
     C_Magician(int x, int y) 
-		: C_Hero(x, y)
+		: C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             MagicianBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -73,7 +77,7 @@ class C_Reaper : public C_Hero
 {
 public:
     C_Reaper(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             ReaperBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -106,7 +110,7 @@ class C_Ninja : public C_Hero
 {
 public:
     C_Ninja(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             NinjaBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -139,7 +143,7 @@ class C_Ghost : public C_Hero
 {
 public:
     C_Ghost(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             GhostBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -172,7 +176,7 @@ class C_Warrior : public C_Hero
 {
 public:
     C_Warrior(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             WarriorBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -205,7 +209,7 @@ class C_Defender : public C_Hero
 {
 public:
     C_Defender(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             DefenderBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -238,7 +242,7 @@ class C_Knight : public C_Hero
 {
 public:
     C_Knight(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {
         for (int i = 0; i < N_IMAGES; i++)
             KnightBit[i] = LoadBitmap(hInst, MAKEINTRESOURCE(start + i));
@@ -271,7 +275,7 @@ class C_None : public C_Hero
 {
 public:
     C_None(int x, int y)
-        : C_Hero(x, y)
+        : C_Hero(x, y, N_IMAGES)
     {}
     virtual ~C_None() override {}
     virtual void Render(HDC memdc) override {}

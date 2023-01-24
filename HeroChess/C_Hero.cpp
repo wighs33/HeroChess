@@ -28,6 +28,17 @@ void C_Hero::Move_Per_Frame(int dest_x, int dest_y)
     }
 }
 
+void C_Hero::Animation()
+{
+    //애니메이션 재생
+    move_ = 1;
+    if (count == N_IMAGES - 1)
+    {
+        move_ = 0;
+        count = 0;
+    }
+}
+
 void C_Magician::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
@@ -60,17 +71,6 @@ void C_Magician::Use_Skill(shared_ptr<C_Hero>& hero)
         move_ = 0;
         count = 0;
     }
-    if (move_ == 1) return;
-
-    //마법사 능력 : 위치 체인지
-    int tmp_x = x_;
-    int tmp_y = y_;
-
-    x_ = hero->get_x();
-    y_ = hero->get_y();
-
-    hero->set_x(tmp_x);
-    hero->set_y(tmp_y);
 }
 
 void C_Reaper::Render(HDC memdc)

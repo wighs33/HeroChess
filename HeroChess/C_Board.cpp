@@ -67,6 +67,8 @@ void C_Board::Render(HDC memdc)
 		wsprintf(skill_description, _T(" 닌자 능력 : 주위에 있는 영웅 한 명의 능력을 카피한다. "));
 		break;
 	case GHOST:
+		wsprintf(skill_description, _T(" 초기 위치에 영웅이 존재할 때 능력 사용 후 그 영웅은 제거된다. "));
+		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
 		wsprintf(skill_description, _T(" 고스트 능력 : 적군 진영 끝에 도달 시 한 명을 제거하고 초기 위치로 돌아온다. "));
 		break;
 	case WARRIOR:
@@ -74,7 +76,7 @@ void C_Board::Render(HDC memdc)
 		break;
 	case DEFENDER:
 		wsprintf(skill_description, _T(" 디펜더는 공격 행동을 할 수 없고 공격 대상이 될 수 없다. "));
-		TextOut(memdc, 0, WIN_H - 120, skill_description, lstrlen(skill_description));
+		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
 		wsprintf(skill_description, _T(" 디펜더 능력 : 가로 또는 세로 방향으로 이동한다. (장애물이 있으면 막힌다.)"));
 		break;
 	case KNIGHT:
@@ -91,8 +93,8 @@ void C_Board::Render(HDC memdc)
 
 void C_Board::Render_Heroes(HDC memdc)
 {
-	auto heroes = p1_heroes;
-	auto opposing_heroes = p2_heroes;
+	heroes = p1_heroes;
+	opposing_heroes = p2_heroes;
 	if (gameplay.turn_action.first == 2)
 	{
 		heroes = p2_heroes;
@@ -169,57 +171,18 @@ void C_Board::Render_Heroes(HDC memdc)
 	}
 	else if (gameplay.turn_action.second == gameplay.SKILL)
 	{
-		if (selected_index == MAGICIAN)
-		{
-			Magician_Skill_Range(memdc, heroes, MAGICIAN);
-		}
-		else if(selected_index == REAPER)
-		{
-			Reaper_And_Ninja_Skill_Range(memdc);
-		}
+		if (selected_index == MAGICIAN)			Magician_Skill_Range(memdc, MAGICIAN);
+		else if (selected_index == REAPER)			Reaper_And_Ninja_Skill_Range(memdc);
 		else if (selected_index == NINJA)
 		{
 			//카피한 영웅
-			if (skill_copy_index == MAGICIAN)
-			{
-				Magician_Skill_Range(memdc, heroes, NINJA);
-				return;
-			}
-			else if (skill_copy_index == REAPER)
-			{
-				Reaper_And_Ninja_Skill_Range(memdc);
-				return;
-			}
-			Reaper_And_Ninja_Skill_Range(memdc);
+			if (skill_copy_index == MAGICIAN)		Magician_Skill_Range(memdc, NINJA);
+			else if (skill_copy_index == REAPER)	Reaper_And_Ninja_Skill_Range(memdc);
+			else if (skill_copy_index == GHOST)	Ghost_Skill_Range(memdc);
+			else														Reaper_And_Ninja_Skill_Range(memdc);
 		}
-		else if (selected_index == GHOST)
-		{
-			//적진 끝에 도달하지 않으면 자동 턴 교체
-			//player1 일 때
-			if(gameplay.turn_action.first == 1)
-				if (Pos_To_Index(select_y) != BOARD_H - 1)
-				{
-					Turn_Change();
-					return;
-				}
-
-			//player2 일 때
-			if (gameplay.turn_action.first == 2)
-				if (Pos_To_Index(select_y) != 0)
-				{
-					Turn_Change();
-					return;
-				}
-
-			for (size_t i = 0; i < N_HEROES; i++)
-			{
-				Show_Color(memdc, opposing_heroes[i]->get_x(), opposing_heroes[i]->get_y(), YELLOW);
-			}
-		}
-		else if (selected_index == WARRIOR)
-		{
-			//자동
-		}
+		else if (selected_index == GHOST)			Ghost_Skill_Range(memdc);
+		else if (selected_index == WARRIOR);	//자동
 		else if (selected_index == DEFENDER)
 		{
 			for (int i = Pos_To_Index(select_x) + 1; i < BOARD_W; ++i)
@@ -367,8 +330,8 @@ void C_Board::Act_Hero()
 	//보드 밖 클릭하면 리턴
 	if (click_index.first == -1 || click_index.second == -1) return;
 
-	auto heroes = p1_heroes;
-	auto opposing_heroes = p2_heroes;
+	heroes = p1_heroes;
+	opposing_heroes = p2_heroes;
 	if (gameplay.turn_action.first == 2)
 	{
 		heroes = p2_heroes;
@@ -507,79 +470,9 @@ void C_Board::Act_Hero()
 	else 	if (gameplay.turn_action.second == gameplay.SKILL)
 	{
 		//마법사
-		if (selected_index == MAGICIAN)
-		{
-			//적용 대상 : 아군
-			//아군 아닐 때 턴 교체 후 리턴
-			if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first)
-			{
-				Turn_Change();
-				return;
-			}
-
-			//클릭한 영웅 찾기
-			for (size_t i = 0; i < N_HEROES; i++)
-			{
-				pair<int, int> tmp = { Pos_To_Index(heroes[i]->get_x()), Pos_To_Index(heroes[i]->get_y()) };
-				if (click_index == tmp)
-				{
-					//스킬 사용
-					heroes[selected_index]->Use_Skill(heroes[i]);
-
-					//턴 교체
-					if (heroes[selected_index]->Get_Move() == 0)
-					{
-						Turn_Change();
-					}
-					break;
-				}
-			}
-		}
+		if (selected_index == MAGICIAN) Magician_Skill();
 		//사신
-		else if (selected_index == REAPER)
-		{
-			//적용 대상 : 상대
-			if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
-				heroes_pos[click_index.second][click_index.first] == 0)
-			{
-				Turn_Change();
-				return;
-			}
-
-			//범위 : 한 칸 반경
-			if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) + 1) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) - 1) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) + 1) ||
-				click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) - 1)
-				))
-			{
-				Turn_Change();
-				return;
-			}
-			
-			//클릭한 영웅 찾기
-			for (size_t i = 0; i < N_HEROES; i++)
-			{
-				pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
-				if (click_index == tmp)
-				{
-					//스킬 사용
-					heroes[selected_index]->Use_Skill(opposing_heroes[i]);
-
-					//턴 교체
-					if (heroes[selected_index]->Get_Move() == 0)
-					{
-						heroes_pos[click_index.second][click_index.first] = 0;
-						Turn_Change();
-					}
-					break;
-				}
-			}
-		}
+		else if (selected_index == REAPER) Reaper_Skill();
 		//닌자
 		else if (selected_index == NINJA)
 		{
@@ -621,6 +514,7 @@ void C_Board::Act_Hero()
 				return;
 			}
 
+			//임시
 			cout << skill_copy_index << endl;
 			cout << click_index.first << " " << click_index.second << endl;
 
@@ -628,100 +522,14 @@ void C_Board::Act_Hero()
 			switch (skill_copy_index)
 			{
 			case MAGICIAN:
-			{
-				//적용 대상 : 아군
-				//아군 아닐 때 턴 교체 후 리턴
-				if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first)
-				{
-					Turn_Change();
-					return;
-				}
-
-				//클릭한 영웅 찾기
-				for (size_t i = 0; i < N_HEROES; i++)
-				{
-					pair<int, int> tmp = { Pos_To_Index(heroes[i]->get_x()), Pos_To_Index(heroes[i]->get_y()) };
-					if (click_index == tmp)
-					{
-						//애니메이션 재생
-						heroes[NINJA]->Use_Skill(heroes[i]);
-
-						if (heroes[NINJA]->Get_Move() == 1) return;
-
-						//마법사 능력 : 위치 체인지
-						int tmp_x = heroes[NINJA]->get_x();
-						int tmp_y = heroes[NINJA]->get_y();
-
-						heroes[NINJA]->set_x(heroes[i]->get_x());
-						heroes[NINJA]->set_y(heroes[i]->get_y());
-
-						heroes[i]->set_x(tmp_x);
-						heroes[i]->set_y(tmp_y);
-
-						//턴 교체
-						if (heroes[NINJA]->Get_Move() == 0)
-						{
-							Turn_Change();
-							return;
-						}
-						break;
-					}
-				}
-			}
-			break;
-
+				Magician_Skill();
+				break;
 			case REAPER:
-			{
-				//적용 대상 : 상대
-				if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
-					heroes_pos[click_index.second][click_index.first] == 0)
-				{
-					Turn_Change();
-					return;
-				}
-
-				//범위 : 한 칸 반경
-				if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) + 1) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) - 1) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) + 1) ||
-					click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) - 1)
-					))
-				{
-					Turn_Change();
-					return;
-				}
-
-				//클릭한 영웅 찾기
-				for (size_t i = 0; i < N_HEROES; i++)
-				{
-					pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
-					if (click_index == tmp)
-					{
-						//애니메이션 재생
-						heroes[NINJA]->Use_Skill(opposing_heroes[i]);
-
-						if (heroes[NINJA]->Get_Move() == 1) return;
-
-						//사신 능력 : 주위 영웅 한명 제거
-						opposing_heroes[i].reset();
-						opposing_heroes[i] = make_shared<C_None>(0, 0);
-
-						//턴 교체
-						if (heroes[NINJA]->Get_Move() == 0)
-						{
-							heroes_pos[click_index.second][click_index.first] = 0;
-							Turn_Change();
-							return;
-						}
-						break;
-					}
-				}
-			}
-			break;
+				Reaper_Skill();
+				break;
+			case GHOST:
+				Ghost_Skill();
+				break;
 			default:
 			{
 				Turn_Change();
@@ -731,48 +539,7 @@ void C_Board::Act_Hero()
 			}
 		}
 		//고스트
-		else if (selected_index == GHOST)
-		{
-			//적용 대상 : 상대
-			if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
-				heroes_pos[click_index.second][click_index.first] == 0)
-			{
-				Turn_Change();
-				return;
-			}
-
-			//제거할 영웅
-			auto& target_hero = Find_Hero_By_Index(((gameplay.turn_action.first - 1) ^ 1) + 1, click_index.first, click_index.second);
-
-			//스킬 사용
-			heroes[selected_index]->Use_Skill(target_hero);
-
-			//이동 중일 때 리턴
-			if (heroes[selected_index]->Get_Move() == 1) return;
-
-			int tmp_iy;
-			if (gameplay.turn_action.first == 1)
-				tmp_iy = 1;
-			else
-				tmp_iy = BOARD_H - 2;
-
-			//초기 자리에 영웅 있을 때 삭제
-			auto& tmp_hero = Find_Hero_By_Index(ALL, 3, tmp_iy);
-			if (tmp_hero)
-			{
-				tmp_hero.reset();
-				tmp_hero = make_shared<C_None>(0, 0);
-			}
-
-			//초기 자리로 돌아가기
-			heroes[selected_index]->set_x(Index_To_Pos(3));
-			heroes[selected_index]->set_y(Index_To_Pos(tmp_iy));
-			heroes_pos[tmp_iy][3] = gameplay.turn_action.first;
-
-			heroes_pos[click_index.second][click_index.first] = 0;
-			heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
-			Turn_Change();
-		}
+		else if (selected_index == GHOST)			Ghost_Skill();
 		//전사
 		else if (selected_index == WARRIOR)
 		{
@@ -993,7 +760,7 @@ shared_ptr<C_Hero>& C_Board::Find_Hero_By_Index(int who, int ix, int iy)
 	return null_hero;
 }
 
-void C_Board::Magician_Skill_Range(HDC memdc, shared_ptr<C_Hero>* heroes, int except)
+void C_Board::Magician_Skill_Range(HDC memdc, int except)
 {
 	for (size_t i = 0; i < N_HEROES; i++)
 	{
@@ -1040,4 +807,159 @@ void C_Board::Reaper_And_Ninja_Skill_Range(HDC memdc)
 	{
 		Turn_Change();
 	}
+}
+
+void C_Board::Ghost_Skill_Range(HDC memdc)
+{
+	//적진 끝에 도달하지 않으면 자동 턴 교체
+	int last_line = gameplay.turn_action.first == 1 ? (BOARD_H - 1) : 0;
+	if (Pos_To_Index(select_y) != last_line)
+	{
+		Turn_Change();
+		return;
+	}
+
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		Show_Color(memdc, opposing_heroes[i]->get_x(), opposing_heroes[i]->get_y(), YELLOW);
+	}
+}
+
+void C_Board::Magician_Skill()
+{
+	//적용 대상 : 아군
+	//아군 아닐 때 턴 교체 후 리턴
+	if (heroes_pos[click_index.second][click_index.first] != gameplay.turn_action.first)
+	{
+		Turn_Change();
+		return;
+	}
+
+	//클릭한 영웅 찾기
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		pair<int, int> tmp = { Pos_To_Index(heroes[i]->get_x()), Pos_To_Index(heroes[i]->get_y()) };
+		if (click_index == tmp)
+		{
+			heroes[selected_index]->Animation();
+
+			if (heroes[selected_index]->Get_Move() == 1) return;
+
+			//마법사 능력 : 위치 체인지
+			int tmp_x = heroes[selected_index]->get_x();
+			int tmp_y = heroes[selected_index]->get_y();
+
+			heroes[selected_index]->set_x(heroes[i]->get_x());
+			heroes[selected_index]->set_y(heroes[i]->get_y());
+
+			heroes[i]->set_x(tmp_x);
+			heroes[i]->set_y(tmp_y);
+
+			//턴 교체
+			if (heroes[selected_index]->Get_Move() == 0)
+			{
+				Turn_Change();
+				return;
+			}
+			break;
+		}
+	}
+}
+
+void C_Board::Reaper_Skill()
+{
+	//적용 대상 : 상대
+	if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
+		heroes_pos[click_index.second][click_index.first] == 0)
+	{
+		Turn_Change();
+		return;
+	}
+
+	//범위 : 한 칸 반경
+	if (!(click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) - 1) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x), Pos_To_Index(select_y) + 1) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y)) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y)) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) + 1) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x) + 1, Pos_To_Index(select_y) - 1) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) + 1) ||
+		click_index == make_pair<int, int>(Pos_To_Index(select_x) - 1, Pos_To_Index(select_y) - 1)
+		))
+	{
+		Turn_Change();
+		return;
+	}
+
+	//클릭한 영웅 찾기
+	for (size_t i = 0; i < N_HEROES; i++)
+	{
+		pair<int, int> tmp = { Pos_To_Index(opposing_heroes[i]->get_x()), Pos_To_Index(opposing_heroes[i]->get_y()) };
+		if (click_index == tmp)
+		{
+			//애니메이션 재생
+			heroes[selected_index]->Animation();
+
+			if (heroes[selected_index]->Get_Move() == 1) return;
+
+			//사신 능력 : 주위 영웅 한명 제거
+			opposing_heroes[i].reset();
+			opposing_heroes[i] = make_shared<C_None>(0, 0);
+
+			//턴 교체
+			if (heroes[selected_index]->Get_Move() == 0)
+			{
+				heroes_pos[click_index.second][click_index.first] = 0;
+				Turn_Change();
+				return;
+			}
+			break;
+		}
+	}
+}
+
+void C_Board::Ghost_Skill()
+{
+	//적용 대상 : 상대
+	if (heroes_pos[click_index.second][click_index.first] == gameplay.turn_action.first or
+		heroes_pos[click_index.second][click_index.first] == 0)
+	{
+		Turn_Change();
+		return;
+	}
+
+	//제거할 영웅
+	auto& target_hero = Find_Hero_By_Index(((gameplay.turn_action.first - 1) ^ 1) + 1, click_index.first, click_index.second);
+
+	//애니메이션 재생
+	heroes[selected_index]->Animation();
+
+	if (heroes[selected_index]->Get_Move() == 1) return;
+
+	//고스트 능력 : 맨 끝 도달 시 주위 영웅 한명 제거
+	target_hero.reset();
+	target_hero = make_shared<C_None>(0, 0);
+
+	int tmp_iy;
+	if (gameplay.turn_action.first == 1)
+		tmp_iy = 1;
+	else
+		tmp_iy = BOARD_H - 2;
+
+	//초기 자리에 영웅 있을 때 삭제
+	auto& tmp_hero = Find_Hero_By_Index(ALL, 3, tmp_iy);
+	if (tmp_hero)
+	{
+		tmp_hero.reset();
+		tmp_hero = make_shared<C_None>(0, 0);
+	}
+
+	//초기 자리로 돌아가기
+	heroes[selected_index]->set_x(Index_To_Pos(3));
+	heroes[selected_index]->set_y(Index_To_Pos(tmp_iy));
+	heroes_pos[tmp_iy][3] = gameplay.turn_action.first;
+
+	heroes_pos[click_index.second][click_index.first] = 0;
+	heroes_pos[Pos_To_Index(select_y)][Pos_To_Index(select_x)] = 0;
+	Turn_Change();
 }
