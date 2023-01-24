@@ -166,6 +166,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         castle.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(0)- GRID_WH/2, GRID_WH, GRID_WH + GRID_WH / 2);
         castle.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(BOARD_H - 1)- GRID_WH/2, GRID_WH, GRID_WH + GRID_WH / 2);
 
+        //성이 불타는 이미지
+        if(board.Lifes().first == 1)
+            fire.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(0) - GRID_WH / 2, GRID_WH, GRID_WH + GRID_WH / 2);
+        if (board.Lifes().second == 1)
+            fire.Render(memdc, board.Index_To_Pos(3), board.Index_To_Pos(BOARD_H - 1) - GRID_WH / 2, GRID_WH, GRID_WH + GRID_WH / 2);
+
+        if (board.Lifes().first == 0 || board.Lifes().second == 0)
+        {
+            //차일드 윈도우 띄우기
+        }
+
         //비트맵 지우기
         SelectObject(memdc, oldBit);
 

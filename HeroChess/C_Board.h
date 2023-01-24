@@ -80,6 +80,8 @@ public:
 
 	shared_ptr<C_Hero>& Find_Hero_By_Index(int who, int x, int y);
 
+	pair<int, int> Lifes() const { return lifes; }
+
 private:
 	C_Grid grass_tile;
 	C_Grid ground_tile;
