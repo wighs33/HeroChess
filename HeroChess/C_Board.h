@@ -102,7 +102,7 @@ private:
 	pair<int, int> click_index;
 
 	int select_x, select_y;
-	int selected_index;
+	int selected_index = -1;
 
 	//영웅 추가 시 생성자에서 할당
 	static const int N_HEROES = 7;

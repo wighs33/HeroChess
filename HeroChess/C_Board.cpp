@@ -52,6 +52,39 @@ void C_Board::Render(HDC memdc)
 	wsprintf(lpOut3, _T("click_index : %d %d"), click_index.first, click_index.second);
 	TextOut(memdc, 20, 40, lpOut3, lstrlen(lpOut3));
 
+
+	static TCHAR skill_description[500];
+
+	switch (selected_index)
+	{
+	case MAGICIAN:
+		wsprintf(skill_description, _T(" 마법사 능력 : 아군 영웅 한 명과 위치를 교체한다. "));
+		break;
+	case REAPER:
+		wsprintf(skill_description, _T(" 사신 능력 : 주위에 있는 적군 영웅 한 명을 제거한다. "));
+		break;
+	case NINJA:
+		wsprintf(skill_description, _T(" 닌자 능력 : 주위에 있는 영웅 한 명의 능력을 카피한다. "));
+		break;
+	case GHOST:
+		wsprintf(skill_description, _T(" 고스트 능력 : 적군 진영 끝에 도달 시 한 명을 제거하고 초기 위치로 돌아온다. "));
+		break;
+	case WARRIOR:
+		wsprintf(skill_description, _T(" 전사 능력 : 주위에 있는 적군 영웅 모두를 무력화한다. "));
+		break;
+	case DEFENDER:
+		wsprintf(skill_description, _T(" 디펜더는 공격 행동을 할 수 없고 공격 대상이 될 수 없다. "));
+		TextOut(memdc, 0, WIN_H - 120, skill_description, lstrlen(skill_description));
+		wsprintf(skill_description, _T(" 디펜더 능력 : 가로 또는 세로 방향으로 이동한다. (장애물이 있으면 막힌다.)"));
+		break;
+	case KNIGHT:
+		wsprintf(skill_description, _T(" 기사 능력 : 주위에 있는 아군 영웅 한 명을 기사의 이동 방향으로 이동시킨다. "));
+		break;
+	default:
+		wsprintf(skill_description, _T(""));
+	}
+	TextOut(memdc, 0, WIN_H - 100, skill_description, lstrlen(skill_description));
+
 	SelectObject(memdc, oldbrush);
 	DeleteObject(hpen);
 }
@@ -319,7 +352,8 @@ void C_Board::Show_Color(HDC memdc, int rect_x, int rect_y, int color)
 void C_Board::Check_Click(int x, int y)
 {
 	//애니메이션 중 클릭 갱신 막기
-	if (p1_heroes[selected_index]->Get_Move() == 1 or p2_heroes[selected_index]->Get_Move() == 1) return;
+	if (selected_index != -1)
+		if (p1_heroes[selected_index]->Get_Move() == 1 or p2_heroes[selected_index]->Get_Move() == 1) return;
 
 	click_index = { -1, -1 };
 
