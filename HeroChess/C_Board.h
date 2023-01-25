@@ -85,10 +85,16 @@ public:
 	void Magician_Skill_Range(HDC memdc, int except);
 	void Reaper_And_Ninja_Skill_Range(HDC memdc);
 	void Ghost_Skill_Range(HDC memdc);
+	void Defender_Skill_Range(HDC memdc);
+	void Knight_Skill_Range(HDC memdc);
 
 	void Magician_Skill();
 	void Reaper_Skill();
+	void Ninja_Skill();
 	void Ghost_Skill();
+	void Warrior_Skill();
+	void Defender_Skill();
+	void Knight_Skill();
 
 private:
 	C_Grid grass_tile;

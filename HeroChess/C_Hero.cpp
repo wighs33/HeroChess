@@ -266,14 +266,5 @@ void C_Knight::Render(HDC memdc)
 
 void C_Knight::Use_Skill(shared_ptr<C_Hero>& hero)
 {
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-    if (move_ == 1) return;
 
-    //마법사 능력 : 위치 체인지
 }
