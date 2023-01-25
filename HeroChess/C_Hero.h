@@ -8,7 +8,6 @@ public:
     virtual ~C_Hero() {}
     virtual void Render(HDC memdc) = 0;
     virtual void Move_Per_Frame(int destX, int destY);
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) = 0;
     virtual int get_x() const { return x_; }
     virtual int get_y() const { return y_; }
     virtual void set_x(int x) { x_ = x; }
@@ -60,8 +59,6 @@ public:
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
 
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
-
 private:
     static const int N_IMAGES = 16;
 
@@ -92,8 +89,6 @@ public:
     {
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
-
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
 
 private:
     static const int N_IMAGES = 5;
@@ -126,8 +121,6 @@ public:
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
 
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
-
 private:
     static const int N_IMAGES = 9;
 
@@ -158,8 +151,6 @@ public:
     {
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
-
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
 
 private:
     static const int N_IMAGES = 6;
@@ -192,8 +183,6 @@ public:
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
 
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
-
 private:
     static const int N_IMAGES = 5;
 
@@ -224,8 +213,6 @@ public:
     {
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
-
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
 
 private:
     static const int N_IMAGES = 3;
@@ -258,8 +245,6 @@ public:
         C_Hero::Move_Per_Frame(dest_x, dest_y);
     }
 
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override;
-
 private:
     static const int N_IMAGES = 4;
 
@@ -280,5 +265,4 @@ public:
     virtual ~C_None() override {}
     virtual void Render(HDC memdc) override {}
     virtual void Move_Per_Frame(int dest_x, int dest_y) override{}
-    virtual void Use_Skill(shared_ptr<C_Hero>& hero) override {}
 };

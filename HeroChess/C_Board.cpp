@@ -36,58 +36,8 @@ void C_Board::Render(HDC memdc)
 		LineTo(memdc, GRID_WH * 8, i);
 	}
 
-	for (int iy = 0; iy < 10; ++iy)
-		for (int ix = 0; ix < 7; ++ix)
-		{
-			static TCHAR lpOut[100];
-			wsprintf(lpOut, _T("%d "), heroes_pos[iy][ix]);
-			TextOut(memdc, Index_To_Pos(ix), Index_To_Pos(iy), lpOut, lstrlen(lpOut));
-		}
-
-	static TCHAR lpOut2[100];
-	wsprintf(lpOut2, _T("turn_action : %d %d"), gameplay.turn_action.first, gameplay.turn_action.second);
-	TextOut(memdc, 20, 20, lpOut2, lstrlen(lpOut2));
-
-	static TCHAR lpOut3[100];
-	wsprintf(lpOut3, _T("click_index : %d %d"), click_index.first, click_index.second);
-	TextOut(memdc, 20, 40, lpOut3, lstrlen(lpOut3));
-
-
-	static TCHAR skill_description[500];
-
-	switch (selected_index)
-	{
-	case MAGICIAN:
-		wsprintf(skill_description, _T(" 마법사 능력 : 아군 영웅 한 명과 위치를 교체한다. "));
-		break;
-	case REAPER:
-		wsprintf(skill_description, _T(" 사신 능력 : 주위에 있는 적군 영웅 한 명을 제거한다. "));
-		break;
-	case NINJA:
-		wsprintf(skill_description, _T(" 전사의 능력은 카피할 수 없다. (지속 능력은 카피 불가) "));
-		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
-		wsprintf(skill_description, _T(" 닌자 능력 : 주위에 있는 영웅 한 명의 능력을 카피 후 자신의 턴동안 사용한다. "));
-		break;
-	case GHOST:
-		wsprintf(skill_description, _T(" 초기 위치에 영웅이 존재할 때 능력 사용 후 그 영웅은 제거된다. "));
-		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
-		wsprintf(skill_description, _T(" 고스트 능력 : 적군 진영 끝에 도달 시 한 명을 제거하고 초기 위치로 돌아온다. "));
-		break;
-	case WARRIOR:
-		wsprintf(skill_description, _T(" 전사 능력 : 주위에 있는 적군 영웅 모두를 무력화한다. "));
-		break;
-	case DEFENDER:
-		wsprintf(skill_description, _T(" 디펜더는 공격 행동을 할 수 없고 공격 대상이 될 수 없다. "));
-		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
-		wsprintf(skill_description, _T(" 디펜더 능력 : 가로 또는 세로 방향으로 이동한다. (장애물이 있으면 막힌다.)"));
-		break;
-	case KNIGHT:
-		wsprintf(skill_description, _T(" 기사 능력 : 주위에 있는 아군 영웅 한 명을 기사의 이동 방향으로 이동시킨다. "));
-		break;
-	default:
-		wsprintf(skill_description, _T(""));
-	}
-	TextOut(memdc, 0, WIN_H - 100, skill_description, lstrlen(skill_description));
+	Text_For_Debug(memdc);
+	Skill_Desc(memdc);
 
 	SelectObject(memdc, oldbrush);
 	DeleteObject(hpen);
@@ -989,4 +939,62 @@ void  C_Board::Knight_Skill()
 		Turn_Change();
 		return;
 	}
+}
+
+void C_Board::Text_For_Debug(HDC memdc)
+{
+	for (int iy = 0; iy < 10; ++iy)
+		for (int ix = 0; ix < 7; ++ix)
+		{
+			static TCHAR lpOut[100];
+			wsprintf(lpOut, _T("%d "), heroes_pos[iy][ix]);
+			TextOut(memdc, Index_To_Pos(ix), Index_To_Pos(iy), lpOut, lstrlen(lpOut));
+		}
+
+	static TCHAR lpOut2[100];
+	wsprintf(lpOut2, _T("turn_action : %d %d"), gameplay.turn_action.first, gameplay.turn_action.second);
+	TextOut(memdc, 20, 20, lpOut2, lstrlen(lpOut2));
+
+	static TCHAR lpOut3[100];
+	wsprintf(lpOut3, _T("click_index : %d %d"), click_index.first, click_index.second);
+	TextOut(memdc, 20, 40, lpOut3, lstrlen(lpOut3));
+}
+
+void C_Board::Skill_Desc(HDC memdc)
+{
+	static TCHAR skill_description[500];
+
+	switch (selected_index)
+	{
+	case MAGICIAN:
+		wsprintf(skill_description, _T(" 마법사 능력 : 아군 영웅 한 명과 위치를 교체한다. "));
+		break;
+	case REAPER:
+		wsprintf(skill_description, _T(" 사신 능력 : 주위에 있는 적군 영웅 한 명을 제거한다. "));
+		break;
+	case NINJA:
+		wsprintf(skill_description, _T(" 전사의 능력은 카피할 수 없다. (지속 능력은 카피 불가) "));
+		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
+		wsprintf(skill_description, _T(" 닌자 능력 : 주위에 있는 영웅 한 명의 능력을 카피 후 자신의 턴동안 사용한다. "));
+		break;
+	case GHOST:
+		wsprintf(skill_description, _T(" 초기 위치에 영웅이 존재할 때 능력 사용 후 그 영웅은 제거된다. "));
+		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
+		wsprintf(skill_description, _T(" 고스트 능력 : 적군 진영 끝에 도달 시 한 명을 제거하고 초기 위치로 돌아온다. "));
+		break;
+	case WARRIOR:
+		wsprintf(skill_description, _T(" 전사 능력 : 주위에 있는 적군 영웅 모두를 무력화한다. "));
+		break;
+	case DEFENDER:
+		wsprintf(skill_description, _T(" 디펜더는 공격 행동을 할 수 없고 공격 대상이 될 수 없다. "));
+		TextOut(memdc, 0, WIN_H - 80, skill_description, lstrlen(skill_description));
+		wsprintf(skill_description, _T(" 디펜더 능력 : 가로 또는 세로 방향으로 이동한다. (장애물이 있으면 막힌다.)"));
+		break;
+	case KNIGHT:
+		wsprintf(skill_description, _T(" 기사 능력 : 주위에 있는 아군 영웅 한 명을 기사의 이동 방향으로 이동시킨다. "));
+		break;
+	default:
+		wsprintf(skill_description, _T(""));
+	}
+	TextOut(memdc, 0, WIN_H - 100, skill_description, lstrlen(skill_description));
 }

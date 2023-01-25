@@ -96,6 +96,9 @@ public:
 	void Defender_Skill();
 	void Knight_Skill();
 
+	void Text_For_Debug(HDC memdc);
+	void Skill_Desc(HDC memdc);
+
 private:
 	C_Grid grass_tile;
 	C_Grid ground_tile;

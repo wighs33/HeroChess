@@ -62,17 +62,6 @@ void C_Magician::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Magician::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-}
-
 void C_Reaper::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
@@ -94,22 +83,6 @@ void C_Reaper::Render(HDC memdc)
     SelectObject(image_dc, oldBit);
     //이미지DC 삭제
     DeleteDC(image_dc);
-}
-
-void C_Reaper::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-    if (move_ == 1) return;
-
-    //사신 능력 : 주위 영웅 한명 제거
-    hero.reset();
-    hero = make_shared<C_None>(0, 0);
 }
 
 void C_Ninja::Render(HDC memdc)
@@ -135,17 +108,6 @@ void C_Ninja::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Ninja::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-}
-
 void C_Ghost::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
@@ -167,22 +129,6 @@ void C_Ghost::Render(HDC memdc)
     SelectObject(image_dc, oldBit);
     //이미지DC 삭제
     DeleteDC(image_dc);
-}
-
-void C_Ghost::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-    //애니메이션 재생
-    move_ = 1;
-    if (count == N_IMAGES - 1)
-    {
-        move_ = 0;
-        count = 0;
-    }
-    if (move_ == 1) return;
-
-    //고스트 능력 : 적 진영 끝에 도달 시 한 명 제거하고 초기위치로 귀환
-    hero.reset();
-    hero = make_shared<C_None>(0, 0);
 }
 
 void C_Warrior::Render(HDC memdc)
@@ -208,11 +154,6 @@ void C_Warrior::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Warrior::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-    //보드 클래스에서 해결
-}
-
 void C_Defender::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
@@ -236,11 +177,6 @@ void C_Defender::Render(HDC memdc)
     DeleteDC(image_dc);
 }
 
-void C_Defender::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-    //Move_Per_Frame 메서드로 해결
-}
-
 void C_Knight::Render(HDC memdc)
 {
     //애니메이션 카운트 업데이트 하기
@@ -262,9 +198,4 @@ void C_Knight::Render(HDC memdc)
     SelectObject(image_dc, oldBit);
     //이미지DC 삭제
     DeleteDC(image_dc);
-}
-
-void C_Knight::Use_Skill(shared_ptr<C_Hero>& hero)
-{
-
 }
