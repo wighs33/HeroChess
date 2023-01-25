@@ -36,7 +36,7 @@ void C_Board::Render(HDC memdc)
 		LineTo(memdc, GRID_WH * 8, i);
 	}
 
-	//Text_For_Debug(memdc);
+	Text_For_Debug(memdc);
 	Skill_Desc(memdc);
 
 	SelectObject(memdc, oldbrush);
@@ -158,6 +158,12 @@ void C_Board::Generate_Grid()
 	int h = dist(eng);
 	for (size_t w = 0; w < BOARD_W; w++)
 		tiles_[h][w] = &river_tile;
+
+	for (size_t h = 0; h < BOARD_H; h++)
+		for (size_t w = 0; w < BOARD_W; w++)
+		{
+			heroes_pos[h][w] = 0;
+		}
 
 	//영웅 위치값 저장
 	for (size_t i = 0; i < N_HEROES; i++)

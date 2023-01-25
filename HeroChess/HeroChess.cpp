@@ -212,6 +212,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         board.Check_Click(LOWORD(lParam), HIWORD(lParam));
         InvalidateRgn(hWnd, NULL, false);
         break;
+    case WM_COMMAND:
+    {
+        // 메뉴 선택을 구문 분석합니다:
+        switch (LOWORD(wParam))
+        {
+        case ID_NEWGAME:
+        {
+            int answer = MessageBox(hWnd, _T("게임을 새로 시작하겠습니까?"), _T("새 게임"), MB_OKCANCEL);
+            if (answer == IDOK)
+            {
+                C_Board newboard;
+                board = newboard;
+            }
+        }
+        break;
+        case ID_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+    }
+    break;
     case WM_DESTROY:
         if (hBit) DeleteObject(hBit);
         KillTimer(hWnd, 1);
@@ -220,43 +243,3 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
-
-
-// 정보 대화 상자의 메시지 처리기입니다.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}
-
-    //case WM_COMMAND:
-    //{
-    //    int wmId = LOWORD(wParam);
-    //    // 메뉴 선택을 구문 분석합니다:
-    //    switch (wmId)
-    //    {
-    //    case IDM_ABOUT:
-    //        DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-    //        break;
-    //    case IDM_EXIT:
-    //        DestroyWindow(hWnd);
-    //        break;
-    //    default:
-    //        return DefWindowProc(hWnd, message, wParam, lParam);
-    //    }
-    //}
-    //break;

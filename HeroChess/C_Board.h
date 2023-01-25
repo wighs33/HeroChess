@@ -55,6 +55,42 @@ public:
 		p2_heroes[6] = make_shared<C_Knight>(Index_To_Pos(BOARD_W - 7), Index_To_Pos(BOARD_H - 2));
 	}
 
+	C_Board& operator=(const C_Board& newboard)
+	{
+		grass_tile = newboard.grass_tile;
+		ground_tile = newboard.ground_tile;
+		river_tile = newboard.river_tile;
+
+		Generate_Grid();
+
+		p1_heroes[0] = make_shared<C_Magician>(Index_To_Pos(0), Index_To_Pos(1));
+		p1_heroes[1] = make_shared<C_Reaper>(Index_To_Pos(1), Index_To_Pos(1));
+		p1_heroes[2] = make_shared<C_Ninja>(Index_To_Pos(2), Index_To_Pos(1));
+		p1_heroes[3] = make_shared<C_Ghost>(Index_To_Pos(3), Index_To_Pos(1));
+		p1_heroes[4] = make_shared<C_Warrior>(Index_To_Pos(4), Index_To_Pos(1));
+		p1_heroes[5] = make_shared<C_Defender>(Index_To_Pos(5), Index_To_Pos(1));
+		p1_heroes[6] = make_shared<C_Knight>(Index_To_Pos(6), Index_To_Pos(1));
+
+		p2_heroes[0] = make_shared<C_Magician>(Index_To_Pos(BOARD_W - 1), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[1] = make_shared<C_Reaper>(Index_To_Pos(BOARD_W - 2), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[2] = make_shared<C_Ninja>(Index_To_Pos(BOARD_W - 3), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[3] = make_shared<C_Ghost>(Index_To_Pos(BOARD_W - 4), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[4] = make_shared<C_Warrior>(Index_To_Pos(BOARD_W - 5), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[5] = make_shared<C_Defender>(Index_To_Pos(BOARD_W - 6), Index_To_Pos(BOARD_H - 2));
+		p2_heroes[6] = make_shared<C_Knight>(Index_To_Pos(BOARD_W - 7), Index_To_Pos(BOARD_H - 2));
+
+		gameplay.turn_action.second = 0;
+		click_index = { -1, -1 };
+		select_x = 0;
+		select_y = 0;
+		selected_index = -1;
+		lifes = { 2,2 };
+		skill_copy_index = -1;
+		is_select_copy = false;
+
+		return *this;
+	}
+
 	void Render(HDC memdc);
 	void Render_Heroes(HDC memdc);
 
