@@ -36,7 +36,7 @@ void C_Board::Render(HDC memdc)
 		LineTo(memdc, GRID_WH * 8, i);
 	}
 
-	Text_For_Debug(memdc);
+	//Text_For_Debug(memdc);
 	Skill_Desc(memdc);
 
 	SelectObject(memdc, oldbrush);
@@ -149,22 +149,15 @@ void C_Board::Generate_Grid()
 	for (size_t h = 0; h < BOARD_H; h++)
 		for (size_t w = 0; w < BOARD_W; w++)
 		{
-			//·£´ý 1/5È®·ü
-			if (uid(dre) == 0)
-			{
+			if (dist(eng) == 3)
 				tiles_[h][w] = &ground_tile;
-			}
 			else
-			{
 				tiles_[h][w] = &grass_tile;
-			}
 		}
 
-	int h = uid(dre);
+	int h = dist(eng);
 	for (size_t w = 0; w < BOARD_W; w++)
-	{
 		tiles_[h][w] = &river_tile;
-	}
 
 	//¿µ¿õ À§Ä¡°ª ÀúÀå
 	for (size_t i = 0; i < N_HEROES; i++)
