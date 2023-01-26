@@ -25,8 +25,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
     //디버깅용 : 콘솔 띄우기
-    AllocConsole();
-    freopen("CONOUT$", "wt", stdout);
+    //AllocConsole();
+    //freopen("CONOUT$", "wt", stdout);
 
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);

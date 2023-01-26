@@ -44,7 +44,7 @@ static WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 �
 static random_device seeder;
 static const auto seed = seeder.entropy() ? seeder() : time(nullptr);
 static mt19937 eng(static_cast<mt19937::result_type>(seed));
-static uniform_int_distribution dist(3, BOARD_H - 3);
+static uniform_int_distribution dist(3, BOARD_H - 4);
 
 enum HERO
 {

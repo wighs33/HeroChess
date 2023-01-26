@@ -36,7 +36,7 @@ void C_Board::Render(HDC memdc)
 		LineTo(memdc, GRID_WH * 8, i);
 	}
 
-	Text_For_Debug(memdc);
+	//Text_For_Debug(memdc);
 	Skill_Desc(memdc);
 
 	SelectObject(memdc, oldbrush);
